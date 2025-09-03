@@ -2,6 +2,8 @@ using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using VenomPizzaCartService.src.context;
+using VenomPizzaCartService.src.repository;
+using VenomPizzaCartService.src.service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +11,8 @@ builder.Services.AddDbContext<CartsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-//builder.Services.AddScoped<ProductsService>();
-//builder.Services.AddScoped<ProductsRepository>();
+builder.Services.AddScoped<CartsService>();
+builder.Services.AddScoped<CartsRepository>();
 //builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("Kafka"));
 builder.Services.AddSingleton<IProducer<string, string>>(provider =>
 {

@@ -1,12 +1,13 @@
 ﻿using VenomPizzaCartService.src.context;
+using VenomPizzaCartService.src.dto;
 using VenomPizzaCartService.src.model;
 using VenomPizzaCartService.src.repository;
 
 namespace VenomPizzaCartService.src.service;
 
-public class CartsService
+public class CartsService:ICartsService
 {
-    private readonly CartsRepository _cartRepository;
+    private readonly ICartsRepository _cartRepository;
     public CartsService(CartsRepository repository)
     {
         _cartRepository = repository;
@@ -15,12 +16,16 @@ public class CartsService
     {
         return await _cartRepository.GetCartByUserId(userId);
     }
-    public async Task AddProductToCart(int userId, (int id, int quantity) cartProduct)
+    public async Task AddProductToCart(CartProductDto dto)
     {
-        await _cartRepository.AddProductToCart(userId,cartProduct);
+        await _cartRepository.AddProductToCart(dto);
     }
-    public async Task UpdateProductQuantity(int userId, (int id, int quantity) cartProduct)
+    public async Task UpdateProductQuantity(CartProductDto dto)
     {
-        await _cartRepository.UpdateProductQuantity(userId, cartProduct);
+        await _cartRepository.UpdateProductQuantity(dto);
+    }
+    public async Task DeleteProductInCart(CartProductDto dto)
+    {
+        await _cartRepository.DeleteProductInCart(dto);
     }
 }

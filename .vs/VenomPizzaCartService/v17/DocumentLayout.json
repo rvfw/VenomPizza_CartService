@@ -3,32 +3,28 @@
   "WorkspaceRootPath": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\venompizzacartservice\\src\\model\\cartproduct.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|solutionrelative:venompizzacartservice\\src\\model\\cartproduct.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\venompizzacartservice\\src\\context\\cartsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|solutionrelative:venompizzacartservice\\src\\context\\cartsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2D27C542-44C4-472A-ADEB-3FF1BE2FDC5D}|tests\\tests.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\tests\\cartsrepositorytest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2D27C542-44C4-472A-ADEB-3FF1BE2FDC5D}|tests\\tests.csproj|solutionrelative:tests\\cartsrepositorytest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\venompizzacartservice\\src\\repository\\cartsrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|solutionrelative:venompizzacartservice\\src\\repository\\cartsrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\venompizzacartservice\\src\\context\\cartsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|solutionrelative:venompizzacartservice\\src\\context\\cartsdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\venompizzacartservice\\src\\service\\cartsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|solutionrelative:venompizzacartservice\\src\\service\\cartsservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\venompizzacartservice\\src\\model\\cart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|solutionrelative:venompizzacartservice\\src\\model\\cart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\venompizzacartservice\\src\\kafka\\kafkaconsumerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|solutionrelative:venompizzacartservice\\src\\kafka\\kafkaconsumerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\venompizzacartservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|solutionrelative:venompizzacartservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\venompizzacartservice\\src\\controller\\cartscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|solutionrelative:venompizzacartservice\\src\\controller\\cartscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|d:\\other\\.projects\\venompizza\\venompizzacartservice\\venompizzacartservice\\src\\model\\cartproduct.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19D5F072-B1A9-4CE7-AFD1-53ADB624851C}|VenomPizzaCartService\\VenomPizzaCartService.csproj|solutionrelative:venompizzacartservice\\src\\model\\cartproduct.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -38,45 +34,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
               "Title": "CartProduct.cs",
               "DocumentMoniker": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\model\\CartProduct.cs",
               "RelativeDocumentMoniker": "VenomPizzaCartService\\src\\model\\CartProduct.cs",
               "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\model\\CartProduct.cs",
               "RelativeToolTip": "VenomPizzaCartService\\src\\model\\CartProduct.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAiAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-25T11:43:38.307Z",
+              "WhenOpened": "2025-09-03T16:30:14.45Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "CartsDbContext.cs",
-              "DocumentMoniker": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\context\\CartsDbContext.cs",
-              "RelativeDocumentMoniker": "VenomPizzaCartService\\src\\context\\CartsDbContext.cs",
-              "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\context\\CartsDbContext.cs",
-              "RelativeToolTip": "VenomPizzaCartService\\src\\context\\CartsDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAkAAAAAAAAAA==",
+              "DocumentIndex": 4,
+              "Title": "KafkaConsumerService.cs",
+              "DocumentMoniker": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\Kafka\\KafkaConsumerService.cs",
+              "RelativeDocumentMoniker": "VenomPizzaCartService\\src\\Kafka\\KafkaConsumerService.cs",
+              "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\Kafka\\KafkaConsumerService.cs",
+              "RelativeToolTip": "VenomPizzaCartService\\src\\Kafka\\KafkaConsumerService.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAgwDoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-24T11:28:24.491Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "CartsRepository.cs",
-              "DocumentMoniker": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\repository\\CartsRepository.cs",
-              "RelativeDocumentMoniker": "VenomPizzaCartService\\src\\repository\\CartsRepository.cs",
-              "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\repository\\CartsRepository.cs",
-              "RelativeToolTip": "VenomPizzaCartService\\src\\repository\\CartsRepository.cs",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAgwCQAAABgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-24T11:32:13.864Z",
+              "WhenOpened": "2025-09-03T14:44:48.522Z",
               "EditorCaption": ""
             },
             {
@@ -87,48 +70,48 @@
               "RelativeDocumentMoniker": "VenomPizzaCartService\\src\\service\\CartsService.cs",
               "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\service\\CartsService.cs",
               "RelativeToolTip": "VenomPizzaCartService\\src\\service\\CartsService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-24T11:36:04.539Z",
+              "WhenOpened": "2025-09-02T16:51:34.602Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "CartsController.cs",
-              "DocumentMoniker": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\controller\\CartsController.cs",
-              "RelativeDocumentMoniker": "VenomPizzaCartService\\src\\controller\\CartsController.cs",
-              "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\controller\\CartsController.cs",
-              "RelativeToolTip": "VenomPizzaCartService\\src\\controller\\CartsController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAdAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "CartsRepositoryTest.cs",
+              "DocumentMoniker": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\tests\\CartsRepositoryTest.cs",
+              "RelativeDocumentMoniker": "tests\\CartsRepositoryTest.cs",
+              "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\tests\\CartsRepositoryTest.cs",
+              "RelativeToolTip": "tests\\CartsRepositoryTest.cs",
+              "ViewState": "AgIAAGYAAAAAAAAAAAAAwIMAAACEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-24T11:35:23.494Z",
+              "WhenOpened": "2025-09-02T17:07:50.255Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Cart.cs",
-              "DocumentMoniker": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\model\\Cart.cs",
-              "RelativeDocumentMoniker": "VenomPizzaCartService\\src\\model\\Cart.cs",
-              "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\model\\Cart.cs",
-              "RelativeToolTip": "VenomPizzaCartService\\src\\model\\Cart.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAABMAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "CartsRepository.cs",
+              "DocumentMoniker": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\repository\\CartsRepository.cs",
+              "RelativeDocumentMoniker": "VenomPizzaCartService\\src\\repository\\CartsRepository.cs",
+              "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\repository\\CartsRepository.cs",
+              "RelativeToolTip": "VenomPizzaCartService\\src\\repository\\CartsRepository.cs",
+              "ViewState": "AgIAACAAAAAAAAAAAAAwwDgAAABcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-24T11:30:04.48Z",
+              "WhenOpened": "2025-09-02T16:51:38.322Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\Program.cs",
-              "RelativeDocumentMoniker": "VenomPizzaCartService\\Program.cs",
-              "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\Program.cs",
-              "RelativeToolTip": "VenomPizzaCartService\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAjAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "CartsDbContext.cs",
+              "DocumentMoniker": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\context\\CartsDbContext.cs",
+              "RelativeDocumentMoniker": "VenomPizzaCartService\\src\\context\\CartsDbContext.cs",
+              "ToolTip": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\src\\context\\CartsDbContext.cs",
+              "RelativeToolTip": "VenomPizzaCartService\\src\\context\\CartsDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-24T11:18:09.959Z",
+              "WhenOpened": "2025-09-02T17:15:34.058Z",
               "EditorCaption": ""
             }
           ]

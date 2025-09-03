@@ -3352,6 +3352,7 @@
       "Microsoft.EntityFrameworkCore.InMemory >= 9.0.8",
       "Microsoft.EntityFrameworkCore.Sqlite.Core >= 9.0.8",
       "NUnit >= 4.4.0",
+      "Npgsql >= 9.0.3",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 9.0.4",
       "Swashbuckle.AspNetCore.Swagger >= 9.0.3",
       "Swashbuckle.AspNetCore.SwaggerGen >= 9.0.3",
@@ -3441,6 +3442,10 @@
           "NUnit": {
             "target": "Package",
             "version": "[4.4.0, )"
+          },
+          "Npgsql": {
+            "target": "Package",
+            "version": "[9.0.3, )"
           },
           "Npgsql.EntityFrameworkCore.PostgreSQL": {
             "target": "Package",

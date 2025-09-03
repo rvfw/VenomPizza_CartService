@@ -7,8 +7,8 @@ namespace VenomPizzaCartService.src.controller;
 [Route("api/cart")]
 public class CartsController:Controller
 {
-    private readonly CartsService _cartService;
-    public CartsController(CartsService service)
+    private readonly ICartsService _cartService;
+    public CartsController(ICartsService service)
     {
         _cartService = service;
     }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using VenomPizzaCartService.src.context;
-using VenomPizzaCartService.src.dto;
 using VenomPizzaCartService.src.model;
 
 namespace VenomPizzaCartService.src.repository;
@@ -13,52 +12,45 @@ public class CartsRepository:ICartsRepository
         _context = context;
     }
 
-    public async Task<Cart> GetCartByUserId(int userId)
+    public async Task<Cart?> GetCartById(int id)
     {
-        var foundedCart= await _context.Carts.Include(cp=>cp.Products).FirstOrDefaultAsync(x => x.UserId == userId);
-        if (foundedCart == null)
-            return new Cart() { UserId = userId };
-        return foundedCart;
+        return await _context.Carts.Include(cp => cp.Products).FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task AddProductToCart(CartProductDto dto)
+    public async Task<CartProduct?> GetProductById(int cartId,int productId)
     {
-        var cart = await _context.Carts.Include(cp => cp.Products).FirstOrDefaultAsync(x => x.UserId == dto.UserId);
-        CartProduct? existingProduct= null;
-        if (cart == null)
-        {
-            var createdCart = _context.Carts.Add(new Cart() { UserId = dto.UserId }).Entity;
-            await _context.SaveChangesAsync();
-            cart = createdCart;
-        }
-        else
-            existingProduct = _context.CartProducts.FirstOrDefault(cp => cp.CartId == cart.UserId && cp.ProductId == dto.Id);
-        if (existingProduct != null)
-            existingProduct.Quantity+=dto.Quantity;
-        else
-            _context.CartProducts.Add(new CartProduct(cart, dto.Id, dto.Quantity));
+        return await _context.CartProducts.FirstOrDefaultAsync(x=>x.CartId== cartId && x.ProductId==productId);
+    }
+    public async Task<Cart> CreateCart(int cartId)
+    {
+        var cart= _context.Carts.Add(new Cart {Id = cartId }).Entity;
         await _context.SaveChangesAsync();
+        return cart;
     }
 
-    public async Task UpdateProductQuantity(CartProductDto dto)
+    public async Task<CartProduct> AddProduct(int cartId, int productId, int quantity)
     {
-        var cart = await _context.Carts.Include(cp => cp.Products).FirstOrDefaultAsync(x => x.UserId == dto.UserId);
-        CartProduct? existingProduct = _context.CartProducts.FirstOrDefault(cp => cp.CartId == cart.UserId && cp.ProductId == dto.Id);
-        if (existingProduct == null)
-            throw new KeyNotFoundException("Продукт не найден в корзине");
-        existingProduct.Quantity=dto.Quantity;
+        var createdProduct=_context.CartProducts.Add(new CartProduct(cartId,productId,quantity)).Entity;
         await _context.SaveChangesAsync();
+        return createdProduct;
     }
 
-    public async Task DeleteProductInCart(CartProductDto dto)
+    public async Task<CartProduct> UpdateProductQuantity(int cartId,int productId,int quantity)
     {
-        var cart = await _context.Carts.Include(cp => cp.Products).FirstOrDefaultAsync(x => x.UserId == dto.UserId);
-        if (cart == null)
-            throw new KeyNotFoundException($"Корзина пользователя {dto.UserId} не найдена");
-        CartProduct? existingProduct = _context.CartProducts.FirstOrDefault(cp => cp.CartId == cart.UserId && cp.ProductId == dto.Id);
-        if (existingProduct == null)
-            throw new KeyNotFoundException("Продукт не найден в корзине");
-        _context.CartProducts.Remove(existingProduct);
+        var foundedProduct = await _context.CartProducts.FirstOrDefaultAsync(cp => cp.CartId == cartId && cp.ProductId == productId);
+        if (foundedProduct == null)
+            throw new KeyNotFoundException($"Продукт с ID {productId} не найден");
+        foundedProduct.Quantity = quantity;
+        await _context.SaveChangesAsync();
+        return foundedProduct;
+    }
+
+    public async Task DeleteProductInCart(int cartId,int productId)
+    {
+        var foundedProduct=await _context.CartProducts.FirstOrDefaultAsync(x=>x.CartId==cartId&&x.ProductId==productId);
+        if (foundedProduct == null)
+            throw new KeyNotFoundException($"Продукт с ID {productId} не найден");
+        _context.CartProducts.Remove(foundedProduct);
         await _context.SaveChangesAsync();
     }
 }

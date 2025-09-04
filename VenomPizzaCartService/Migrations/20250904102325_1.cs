@@ -6,40 +6,40 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace VenomPizzaCartService.Migrations
 {
     /// <inheritdoc />
-    public partial class _5 : Migration
+    public partial class _1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Carts",
+                name: "carts",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "integer", nullable: false)
+                    id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TotalPrice = table.Column<decimal>(type: "numeric", nullable: false)
+                    total_price = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Carts", x => x.UserId);
+                    table.PrimaryKey("PK_carts", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "CartProducts",
+                name: "products",
                 columns: table => new
                 {
-                    ProductId = table.Column<int>(type: "integer", nullable: false),
-                    CartId = table.Column<int>(type: "integer", nullable: false),
-                    Quantity = table.Column<int>(type: "integer", nullable: false)
+                    product_id = table.Column<int>(type: "integer", nullable: false),
+                    cart_id = table.Column<int>(type: "integer", nullable: false),
+                    quantity = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CartProducts", x => new { x.CartId, x.ProductId });
+                    table.PrimaryKey("PK_products", x => new { x.cart_id, x.product_id });
                     table.ForeignKey(
-                        name: "FK_CartProducts_Carts_CartId",
-                        column: x => x.CartId,
-                        principalTable: "Carts",
-                        principalColumn: "UserId",
+                        name: "FK_products_carts_cart_id",
+                        column: x => x.cart_id,
+                        principalTable: "carts",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
         }
@@ -48,10 +48,10 @@ namespace VenomPizzaCartService.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CartProducts");
+                name: "products");
 
             migrationBuilder.DropTable(
-                name: "Carts");
+                name: "carts");
         }
     }
 }

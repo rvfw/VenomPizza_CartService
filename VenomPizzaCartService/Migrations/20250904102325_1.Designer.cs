@@ -11,8 +11,8 @@ using VenomPizzaCartService.src.context;
 namespace VenomPizzaCartService.Migrations
 {
     [DbContext(typeof(CartsDbContext))]
-    [Migration("20250903120215_21")]
-    partial class _21
+    [Migration("20250904102325_1")]
+    partial class _1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,18 +26,18 @@ namespace VenomPizzaCartService.Migrations
 
             modelBuilder.Entity("VenomPizzaCartService.src.model.Cart", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("user_id");
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("numeric")
                         .HasColumnName("total_price");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("carts");
                 });

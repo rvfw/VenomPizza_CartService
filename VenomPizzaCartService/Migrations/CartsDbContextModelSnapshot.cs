@@ -23,18 +23,18 @@ namespace VenomPizzaCartService.Migrations
 
             modelBuilder.Entity("VenomPizzaCartService.src.model.Cart", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("user_id");
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("numeric")
                         .HasColumnName("total_price");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("carts");
                 });

@@ -1,5 +1,6 @@
 ﻿
 using Confluent.Kafka;
+using Microsoft.Extensions.Options;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using VenomPizzaCartService.src.dto;
@@ -15,9 +16,9 @@ public class KafkaConsumerService : BackgroundService
     private readonly IConsumer<string,string> _consumer;
     private readonly ILogger<KafkaConsumerService> _logger;
 
-    public KafkaConsumerService(KafkaSettings kafkaSettings, IServiceProvider serviceProvider,ILogger<KafkaConsumerService> logger)
+    public KafkaConsumerService(IOptions<KafkaSettings> kafkaSettings, IServiceProvider serviceProvider,ILogger<KafkaConsumerService> logger)
     {
-        _kafkaSettings = kafkaSettings;
+        _kafkaSettings = kafkaSettings.Value;
         _serviceProvider = serviceProvider;
         _logger = logger;
         var config = new ConsumerConfig
@@ -63,10 +64,10 @@ public class KafkaConsumerService : BackgroundService
         if (dto == null)
             throw new ArgumentNullException(nameof(dto));
         if (topic == _kafkaSettings.Topics.ProductAddedInCart)
-            await cartsService.AddProductToCart(dto);
+            await cartsService.AddProductToCart(dto.CartId,dto.Id,dto.Quantity);
         else if(topic == _kafkaSettings.Topics.ProductQuantityUpdated)
-            await cartsService.UpdateProductQuantity(dto);
+            await cartsService.UpdateProductQuantity(dto.CartId,dto.Id,dto.Quantity);
         else if(topic==_kafkaSettings.Topics.ProductDeletedInCart)
-            await cartsService.DeleteProductInCart(dto);
+            await cartsService.DeleteProductInCart(dto.CartId,dto.Id);
     }
 }

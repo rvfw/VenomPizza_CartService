@@ -2,6 +2,7 @@ using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using VenomPizzaCartService.src.context;
+using VenomPizzaCartService.src.Kafka;
 using VenomPizzaCartService.src.repository;
 using VenomPizzaCartService.src.service;
 
@@ -11,15 +12,16 @@ builder.Services.AddDbContext<CartsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-builder.Services.AddScoped<CartsService>();
-builder.Services.AddScoped<CartsRepository>();
-//builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("Kafka"));
+builder.Services.AddScoped<ICartsService, CartsService>();
+builder.Services.AddScoped<ICartsRepository, CartsRepository>();
+builder.Services.AddScoped<ICartsRepository,CartsRepository>();
+builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("Kafka"));
 builder.Services.AddSingleton<IProducer<string, string>>(provider =>
 {
     var config = new ProducerConfig { BootstrapServers = builder.Configuration["Kafka:BootstrapServers"] };
     return new ProducerBuilder<string, string>(config).Build();
 });
-//builder.Services.AddHostedService<KafkaConsumerService>();
+builder.Services.AddHostedService<KafkaConsumerService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "MyCorsPolicy",

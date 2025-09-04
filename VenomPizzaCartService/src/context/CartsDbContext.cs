@@ -4,10 +4,15 @@ using VenomPizzaCartService.src.model;
 
 namespace VenomPizzaCartService.src.context;
 
-public class CartsDbContext(DbContextOptions<CartsDbContext> options):DbContext(options)
+public class CartsDbContext:DbContext
 {
     public DbSet<Cart> Carts { get; set; }
     public DbSet<CartProduct> CartProducts { get; set; }
+
+    public CartsDbContext(DbContextOptions<CartsDbContext> options) : base(options)
+    {
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CartProduct>()
@@ -18,6 +23,6 @@ public class CartsDbContext(DbContextOptions<CartsDbContext> options):DbContext(
             .HasForeignKey(cp => cp.CartId)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Cart>()
-            .HasKey(c => c.UserId);
+            .HasKey(c => c.Id);
     }
 }

@@ -39,11 +39,11 @@ public class KafkaConsumerService : BackgroundService
             _kafkaSettings.Topics.ProductDeletedInCart,
         };
         _consumer.Subscribe(topics);
-        while (stoppingToken.IsCancellationRequested)
+        while (!stoppingToken.IsCancellationRequested)
         {
             try
             {
-                var result = _consumer.Consume(stoppingToken);
+                var result =await Task.Run(()=> _consumer.Consume(stoppingToken),stoppingToken);
                 _logger.LogInformation($"Получено из топика {result.Topic}:\n{result.Message.Value}");
                 using (var scope = _serviceProvider.CreateScope())
                 {

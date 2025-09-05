@@ -13,6 +13,7 @@ builder.Services.AddDbContext<CartsDbContext>(options =>
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddScoped<ICartsService, CartsService>();
+builder.Services.AddScoped<CartsService>();
 builder.Services.AddScoped<ICartsRepository, CartsRepository>();
 builder.Services.AddScoped<ICartsRepository,CartsRepository>();
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("Kafka"));

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
 using VenomPizzaCartService.src.context;
 using VenomPizzaCartService.src.model;
 
@@ -8,6 +9,8 @@ public class CartsRepository:ICartsRepository
 {
     private readonly CartsDbContext _context;
     private readonly ILogger<CartsRepository> _logger;
+    private readonly ConcurrentDictionary<int, decimal> _pricesCash = new();
+
     public CartsRepository(CartsDbContext context,ILogger<CartsRepository> logger)
     {
         _context = context;
@@ -17,14 +20,32 @@ public class CartsRepository:ICartsRepository
     public async Task<Cart?> GetCartById(int id)
     {
         _logger.LogInformation($"Получаем корзину {id}");
-        return await _context.Carts.Include(cp => cp.Products).FirstOrDefaultAsync(x => x.Id == id);
+        return await _context.Carts.AsNoTracking().Include(cp => cp.Products).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<CartProduct?> GetProductById(int cartId,int productId)
     {
         _logger.LogInformation($"Получаем продукт {productId} из корзины {cartId}");
-        return await _context.CartProducts.FirstOrDefaultAsync(x=>x.CartId== cartId && x.ProductId==productId);
+        return await _context.CartProducts
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x=>x.CartId== cartId && x.ProductId==productId);
     }
+
+    public async Task<decimal> GetCartPrice(int cartId)
+    {
+        _logger.LogInformation($"Подсчет цены товаров из корзины {cartId}");
+        var cart=await GetCartById(cartId);
+        decimal sum = 0;
+        foreach (var product in cart.Products)
+        {
+            if (!_pricesCash.TryGetValue(product.ProductId, out var price))
+                throw new KeyNotFoundException($"Не найдена цена продукта {product.ProductId}");
+            sum += price * product.Quantity;
+        }
+        _logger.LogInformation($"Цена товаров из корзины {cartId}: {sum}");
+        return sum;
+    }
+
     public async Task<Cart> CreateCart(int cartId)
     {
         _logger.LogInformation($"Создаем корзину {cartId}");

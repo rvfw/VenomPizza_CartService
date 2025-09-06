@@ -34,9 +34,8 @@ public class KafkaConsumerService : BackgroundService
     {
         var topics = new[]
         {
-            _kafkaSettings.Topics.ProductAddedInCart,
-            _kafkaSettings.Topics.ProductQuantityUpdated,
-            _kafkaSettings.Topics.ProductDeletedInCart,
+            _kafkaSettings.Topics.ProductUpdated,
+            _kafkaSettings.Topics.CartUpdated,
         };
         _consumer.Subscribe(topics);
         while (!stoppingToken.IsCancellationRequested)
@@ -60,14 +59,20 @@ public class KafkaConsumerService : BackgroundService
 
     private async Task ProccessRequestAsync(ICartsService cartsService,string topic,string message)
     {
-        CartProductDto? dto = JsonSerializer.Deserialize<CartProductDto>(message);
+        KafkaEvent<CartProductDto>? dto = JsonSerializer.Deserialize<KafkaEvent<CartProductDto>>(message);
         if (dto == null)
-            throw new ArgumentNullException(nameof(dto));
-        if (topic == _kafkaSettings.Topics.ProductAddedInCart)
-            await cartsService.AddProductToCart(dto.CartId,dto.Id,dto.Quantity);
-        else if(topic == _kafkaSettings.Topics.ProductQuantityUpdated)
-            await cartsService.UpdateProductQuantity(dto.CartId,dto.Id,dto.Quantity);
-        else if(topic==_kafkaSettings.Topics.ProductDeletedInCart)
-            await cartsService.DeleteProductInCart(dto.CartId,dto.Id);
+            throw new ArgumentNullException("Пустой json");
+        var product = dto.Data??throw new ArgumentException("Пустой объект с информацией");
+        if (topic == _kafkaSettings.Topics.CartUpdated)
+        {
+            if(dto.EventType=="product_added")
+                await cartsService.AddProductToCart(product.CartId, product.Id, product.Quantity);
+            else if (dto.EventType == "product_updated")
+                await cartsService.UpdateProductQuantity(product.CartId, product.Id, product.Quantity);
+            else if (dto.EventType == "product_deleted")
+                await cartsService.DeleteProductInCart(product.CartId, product.Id);
+            else
+                throw new ArgumentException("Неверный тип ивента, есть только: product_added, product_updated, product_deleted");
+        }
     }
 }

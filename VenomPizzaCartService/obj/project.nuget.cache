@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "4GHPh4vaycI=",
+  "dgSpecHash": "LBs4WuqH3Ak=",
   "success": true,
   "projectFilePath": "D:\\Other\\.Projects\\VenomPizza\\VenomPizzaCartService\\VenomPizzaCartService\\VenomPizzaCartService.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\kdani\\.nuget\\packages\\awssdk.core\\4.0.0.26\\awssdk.core.4.0.0.26.nupkg.sha512",
+    "C:\\Users\\kdani\\.nuget\\packages\\awssdk.s3\\4.0.6.13\\awssdk.s3.4.0.6.13.nupkg.sha512",
     "C:\\Users\\kdani\\.nuget\\packages\\confluent.kafka\\2.11.1\\confluent.kafka.2.11.1.nupkg.sha512",
     "C:\\Users\\kdani\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\kdani\\.nuget\\packages\\librdkafka.redist\\2.11.1\\librdkafka.redist.2.11.1.nupkg.sha512",

@@ -2,6 +2,7 @@
 using Moq;
 using VenomPizzaCartService.src.context;
 using VenomPizzaCartService.src.dto;
+using VenomPizzaCartService.src.etc;
 using VenomPizzaCartService.src.model;
 using VenomPizzaCartService.src.repository;
 using VenomPizzaCartService.src.service;
@@ -16,7 +17,7 @@ public class CartsServiceTest
     public CartsServiceTest()
     {
         _mockRepository = new Mock<ICartsRepository>();
-        _service = new CartsService(_mockRepository.Object);
+        _service = new CartsService(_mockRepository.Object,new Mock<ICacheManager>().Object);
         _validCart = new Cart { Id = 1, Products = { new CartProduct() { ProductId = 1 } } };
     }
 

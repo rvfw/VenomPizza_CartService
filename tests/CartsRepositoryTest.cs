@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using VenomPizzaCartService.src.context;
+using VenomPizzaCartService.src.etc;
 using VenomPizzaCartService.src.model;
 using VenomPizzaCartService.src.repository;
 
@@ -9,7 +11,7 @@ namespace tests;
 public class CartsRepositoryTest
 {
     private readonly CartsDbContext _context;
-    private readonly ICartsRepository _repository;
+    private readonly CartsRepository _repository;
     private readonly Cart _validCart;
     public CartsRepositoryTest()
     {
@@ -17,7 +19,7 @@ public class CartsRepositoryTest
             .UseInMemoryDatabase(databaseName:Guid.NewGuid().ToString())
             .Options;
         _context = new CartsDbContext(options);
-        _repository = new CartsRepository(_context,NullLogger<CartsRepository>.Instance);
+        _repository = new CartsRepository(_context,NullLogger<CartsRepository>.Instance,new Mock<ICacheManager>().Object);
         _validCart = new Cart { Id = 1, Products = { new CartProduct() { ProductId = 1 } } };
     }
 

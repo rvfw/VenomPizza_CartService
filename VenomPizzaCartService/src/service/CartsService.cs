@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using VenomPizzaCartService.src.dto;
+using VenomPizzaCartService.src.etc;
 using VenomPizzaCartService.src.model;
 using VenomPizzaCartService.src.repository;
 
@@ -8,9 +9,11 @@ namespace VenomPizzaCartService.src.service;
 public class CartsService:ICartsService
 {
     private readonly ICartsRepository _cartRepository;
-    public CartsService(ICartsRepository repository)
+    private readonly ICacheManager _cacheManager;
+    public CartsService(ICartsRepository repository,ICacheManager cacheManager)
     {
         _cartRepository = repository;
+        _cacheManager = cacheManager;
     }
 
     public async Task<Cart> GetCartById(int id)
@@ -53,5 +56,20 @@ public class CartsService:ICartsService
     public async Task DeleteProductInCart(int cartId, int productId)
     {
         await _cartRepository.DeleteProductInCart(cartId, productId);
+    }
+
+    public void AddProductInfo(ProductShortInfoDto product)
+    {
+        _cacheManager.AddProductInfo(product);
+    }
+
+    public void UpdateProductInfo(ProductShortInfoDto product)
+    {
+        _cacheManager.UpdateProductInfo(product);
+    }
+
+    public void DeleteProductInfo(ProductShortInfoDto product)
+    {
+        _cacheManager.DeleteProductInfo(product.Id);
     }
 }

@@ -22,16 +22,16 @@ public class KafkaConsumerService : BackgroundService
     {
         _cartEventHandlers = new()
         {
-            ["product_added"] = (service, product) => service.AddProductToCart(product.CartId, product.Id, product.Quantity),
-            ["product_updated"] = (service, product) => service.UpdateProductQuantity(product.CartId, product.Id, product.Quantity),
-            ["product_deleted"] = (service, product) => service.DeleteProductInCart(product.CartId, product.Id),
+            ["product_added"] = (service, product) => service.AddProductToCart(product.CartId, product.ProductId,product.PriceId, product.Quantity),
+            ["product_updated"] = (service, product) => service.UpdateProductQuantity(product.CartId, product.ProductId, product.PriceId, product.Quantity),
+            ["product_deleted"] = (service, product) => service.DeleteProductInCart(product.CartId, product.PriceId, product.ProductId),
         };
 
         _productEventHandlers = new()
         {
             ["product_added"]=(service,product)=>service.AddProductInfo(product),
-            ["product_updated"] = (service, product) => service.AddProductInfo(product),
-            ["product_deleted"] = (service, product) => service.AddProductInfo(product),
+            ["product_updated"] = (service, product) => service.UpdateProductInfo(product),
+            ["product_deleted"] = (service, product) => service.DeleteProductInfo(product),
         };
 
         _kafkaSettings = kafkaSettings.Value;
@@ -60,7 +60,13 @@ public class KafkaConsumerService : BackgroundService
         {
             try
             {
-                var result =await Task.Run(()=> _consumer.Consume(stoppingToken),stoppingToken);
+                var result = _consumer.Consume(TimeSpan.FromMilliseconds(1000));
+                if (result?.IsPartitionEOF ?? true)
+                {
+                    await Task.Delay(100, stoppingToken);
+                    continue;
+                }
+                //var result =await Task.Run(()=> _consumer.Consume(stoppingToken),stoppingToken);
                 _logger.LogInformation($"Получено из топика {result.Topic}:\n{result.Message.Value}");
                 await ProccessRequestAsync(cartsService, result.Topic, result.Message.Value); ;
             }

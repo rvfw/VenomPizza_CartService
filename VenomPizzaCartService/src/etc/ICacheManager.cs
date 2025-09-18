@@ -7,9 +7,9 @@ namespace VenomPizzaCartService.src.etc;
 public interface ICacheManager
 {
     ConcurrentDictionary<int, ProductShortInfoDto> GetProductCache();
-    void AddProductInfo(ProductShortInfoDto info);
-    void UpdateProductInfo(ProductShortInfoDto info);
-    void DeleteProductInfo(int id);
+    Task AddProductInfo(ProductShortInfoDto info);
+    Task UpdateProductInfo(ProductShortInfoDto info);
+    Task DeleteProductInfo(int id);
     void SaveSnapshotCallback(object? state);
 
     Task SaveSnapshot();

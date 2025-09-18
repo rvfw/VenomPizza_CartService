@@ -38,38 +38,38 @@ public class CartsService:ICartsService
         OrderRequestDto orderRequestDto = new OrderRequestDto(cartId,cart.Products,await _cartRepository.GetCartPrice(cartId),address,byTheTime);
     }
 
-    public async Task<CartProduct> AddProductToCart(int cartId, int productId, int quantity)
+    public async Task<CartProduct> AddProductToCart(int cartId, int productId, int priceId, int quantity)
     {
         var cart = await _cartRepository.GetCartById(cartId) ?? await _cartRepository.CreateCart(cartId);
         var existingProduct = await _cartRepository.GetProductById(cartId, productId);
         if (existingProduct != null)
-            return await _cartRepository.UpdateProductQuantity(cartId,productId,quantity);
+            return await _cartRepository.UpdateProductQuantity(cartId,productId,priceId, quantity);
         else
-            return await _cartRepository.AddProduct(cartId, productId, quantity);
+            return await _cartRepository.AddProduct(cartId, productId,priceId, quantity);
     }
 
-    public async Task<CartProduct> UpdateProductQuantity(int cartId, int productId, int quantity)
+    public async Task<CartProduct> UpdateProductQuantity(int cartId, int productId,int priceId, int quantity)
     {
-        return await _cartRepository.UpdateProductQuantity(cartId,productId,quantity);
+        return await _cartRepository.UpdateProductQuantity(cartId,productId, priceId, quantity);
     }
 
-    public async Task DeleteProductInCart(int cartId, int productId)
+    public async Task DeleteProductInCart(int cartId, int priceId, int productId)
     {
-        await _cartRepository.DeleteProductInCart(cartId, productId);
+        await _cartRepository.DeleteProductInCart(cartId, priceId, productId);
     }
 
-    public void AddProductInfo(ProductShortInfoDto product)
+    public async Task AddProductInfo(ProductShortInfoDto product)
     {
-        _cacheManager.AddProductInfo(product);
+        await _cacheManager.AddProductInfo(product);
     }
 
-    public void UpdateProductInfo(ProductShortInfoDto product)
+    public async Task UpdateProductInfo(ProductShortInfoDto product)
     {
-        _cacheManager.UpdateProductInfo(product);
+        await _cacheManager.UpdateProductInfo(product);
     }
 
-    public void DeleteProductInfo(ProductShortInfoDto product)
+    public async Task DeleteProductInfo(ProductShortInfoDto product)
     {
-        _cacheManager.DeleteProductInfo(product.Id);
+        await _cacheManager.DeleteProductInfo(product.Id);
     }
 }

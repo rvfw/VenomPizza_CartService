@@ -27,17 +27,18 @@ public class CartsServiceTest
     {
         _mockRepository.Setup(rep => rep.GetCartById(1)).ReturnsAsync(new Cart() { Id = 1 });
         _mockRepository.Setup(rep => rep.GetProductById(1, 2)).ReturnsAsync(() => null);
-        _mockRepository.Setup(rep => rep.AddProduct(1, 2, 3)).ReturnsAsync(new CartProduct(1, 2, 3));
+        _mockRepository.Setup(rep => rep.AddProduct(1, 2, 3, 4)).ReturnsAsync(new CartProduct(1, 2, 3, 4));
 
-        var res = await _service.AddProductToCart(1, 2, 3);
+        var res = await _service.AddProductToCart(1, 2, 3, 4);
 
         _mockRepository.Verify(rep => rep.GetCartById(1), Times.Once());
         _mockRepository.Verify(rep => rep.GetProductById(1, 2), Times.Once());
-        _mockRepository.Verify(rep => rep.AddProduct(1, 2, 3), Times.Once());
+        _mockRepository.Verify(rep => rep.AddProduct(1, 2, 3, 4), Times.Once());
         Assert.NotNull(res);
         Assert.Equal(1, res.CartId);
         Assert.Equal(2, res.ProductId);
-        Assert.Equal(3, res.Quantity);
+        Assert.Equal(3, res.PriceId);
+        Assert.Equal(4, res.Quantity);
     }
 
     [Fact]
@@ -46,36 +47,38 @@ public class CartsServiceTest
         _mockRepository.Setup(rep => rep.GetCartById(1)).ReturnsAsync(() => null);
         _mockRepository.Setup(rep => rep.CreateCart(1)).ReturnsAsync(new Cart() { Id = 1 });
         _mockRepository.Setup(rep => rep.GetProductById(1, 2)).ReturnsAsync(() => null);
-        _mockRepository.Setup(rep => rep.AddProduct(1, 2, 3)).ReturnsAsync(new CartProduct(1, 2, 3));
+        _mockRepository.Setup(rep => rep.AddProduct(1, 2, 3, 4)).ReturnsAsync(new CartProduct(1, 2, 3, 4));
 
-        var res = await _service.AddProductToCart(1, 2, 3);
+        var res = await _service.AddProductToCart(1, 2, 3, 4);
 
         _mockRepository.Verify(rep => rep.GetCartById(1), Times.Once());
         _mockRepository.Verify(rep => rep.GetProductById(1, 2), Times.Once());
         _mockRepository.Verify(rep => rep.CreateCart(1), Times.Once());
-        _mockRepository.Verify(rep => rep.AddProduct(1, 2, 3), Times.Once());
+        _mockRepository.Verify(rep => rep.AddProduct(1, 2, 3, 4), Times.Once());
         Assert.NotNull(res);
         Assert.Equal(1, res.CartId);
         Assert.Equal(2, res.ProductId);
-        Assert.Equal(3, res.Quantity);
+        Assert.Equal(3, res.PriceId);
+        Assert.Equal(4, res.Quantity);
     }
 
     [Fact]
     public async Task AddProductToCart_UpdateProductQuantity()
     {
         _mockRepository.Setup(rep => rep.GetCartById(1)).ReturnsAsync(new Cart() { Id = 1 });
-        _mockRepository.Setup(rep => rep.GetProductById(1, 2)).ReturnsAsync(() => new CartProduct(1, 2, 3));
-        _mockRepository.Setup(rep => rep.UpdateProductQuantity(1, 2, 3)).ReturnsAsync(new CartProduct(1, 2, 6));
+        _mockRepository.Setup(rep => rep.GetProductById(1, 2)).ReturnsAsync(() => new CartProduct(1, 2, 3, 4));
+        _mockRepository.Setup(rep => rep.UpdateProductQuantity(1, 2, 3, 99)).ReturnsAsync(new CartProduct(1, 2, 3, 99));
 
-        var res = await _service.AddProductToCart(1, 2, 3);
+        var res = await _service.AddProductToCart(1, 2, 3, 99);
 
         _mockRepository.Verify(rep => rep.GetCartById(1), Times.Once());
         _mockRepository.Verify(rep => rep.GetProductById(1, 2), Times.Once());
-        _mockRepository.Verify(rep => rep.UpdateProductQuantity(1, 2, 3), Times.Once());
+        _mockRepository.Verify(rep => rep.UpdateProductQuantity(1, 2, 3, 99), Times.Once());
         Assert.NotNull(res);
         Assert.Equal(1, res.CartId);
         Assert.Equal(2, res.ProductId);
-        Assert.Equal(6, res.Quantity);
+        Assert.Equal(3, res.PriceId);
+        Assert.Equal(99, res.Quantity);
     } 
     #endregion
 
@@ -112,12 +115,13 @@ public class CartsServiceTest
     [Fact]
     public async Task UpdateProductQuantity_Success()
     {
-        _mockRepository.Setup(rep => rep.UpdateProductQuantity(1, 2, 3)).ReturnsAsync(new CartProduct(1, 2, 6));
+        _mockRepository.Setup(rep => rep.UpdateProductQuantity(1, 2, 3, 99)).ReturnsAsync(new CartProduct(1, 2, 3, 99));
 
-        var res = await _service.UpdateProductQuantity(1, 2, 3);
+        var res = await _service.UpdateProductQuantity(1, 2, 3, 99);
 
-        _mockRepository.Verify(rep => rep.UpdateProductQuantity(1, 2, 3), Times.Once());
-        Assert.Equal(6, res.Quantity);
+        _mockRepository.Verify(rep => rep.UpdateProductQuantity(1, 2, 3, 99), Times.Once());
+        Assert.Equal(3, res.PriceId);
+        Assert.Equal(99, res.Quantity);
     } 
     #endregion
 

@@ -20,7 +20,7 @@ public class CartsRepositoryTest
             .Options;
         _context = new CartsDbContext(options);
         _repository = new CartsRepository(_context,NullLogger<CartsRepository>.Instance,new Mock<ICacheManager>().Object);
-        _validCart = new Cart { Id = 1, Products = { new CartProduct() { ProductId = 1 } } };
+        _validCart = new Cart { Id = 1, Products = { new CartProduct() { ProductId = 1, PriceId=0 } } };
     }
 
     #region create
@@ -29,13 +29,14 @@ public class CartsRepositoryTest
     {
         _context.Add(_validCart);
         await _context.SaveChangesAsync();
-        await _repository.AddProduct(1,2,3);
+        await _repository.AddProduct(1,2,3,4);
 
         var cart = _context.Carts.FirstOrDefault(x => x.Id == 1)!;
 
         Assert.Equal(2, cart.Products.Count);
         Assert.NotNull(cart.Products.FirstOrDefault(x => x.ProductId == 2));
-        Assert.Equal(3, cart.Products.FirstOrDefault(x => x.ProductId == 2)!.Quantity);
+        Assert.Equal(3, cart.Products.FirstOrDefault(x => x.ProductId == 2).PriceId);
+        Assert.Equal(4, cart.Products.FirstOrDefault(x => x.ProductId == 2)!.Quantity);
     }
     #endregion
 
@@ -87,7 +88,7 @@ public class CartsRepositoryTest
         _context.Add(_validCart);
         await _context.SaveChangesAsync();
 
-        await _repository.UpdateProductQuantity(1, 1, 5);
+        await _repository.UpdateProductQuantity(1, 1, 1, 5);
         var product = _context.Carts.FirstOrDefault(c => c.Id == 1)!.Products.FirstOrDefault(x => x.ProductId == 1)!;
 
         Assert.Equal(5, product.Quantity);
@@ -99,7 +100,7 @@ public class CartsRepositoryTest
         _context.Add(_validCart);
         await _context.SaveChangesAsync();
 
-        await Assert.ThrowsAsync<KeyNotFoundException>(async () => await _repository.UpdateProductQuantity(1, 2, 5));
+        await Assert.ThrowsAsync<KeyNotFoundException>(async () => await _repository.UpdateProductQuantity(1, 2,1, 5));
     } 
     #endregion
 
@@ -110,7 +111,7 @@ public class CartsRepositoryTest
         _context.Add(_validCart);
         await _context.SaveChangesAsync();
 
-        await _repository.DeleteProductInCart(1, 1);
+        await _repository.DeleteProductInCart(1, 1,0);
 
         Assert.Empty(_context.Carts.FirstOrDefault(x => x.Id == 1)!.Products);
     }
@@ -121,7 +122,7 @@ public class CartsRepositoryTest
         _context.Add(_validCart);
         await _context.SaveChangesAsync();
 
-        await Assert.ThrowsAsync<KeyNotFoundException>(async()=> await _repository.DeleteProductInCart(1, 2));
+        await Assert.ThrowsAsync<KeyNotFoundException>(async()=> await _repository.DeleteProductInCart(1, 2,0));
     }
     #endregion
 }

@@ -6,7 +6,7 @@ public class ProductShortInfoDto
     public string Title { get; set; }
     public string? ImageUrl { get; set; }
     public bool IsAvailable { get; set; }
-    public decimal Price { get; set; }
+    public List<PriceVariantDto> Prices { get; set; }
     public ProductShortInfoDto(int id, string title)
     {
         Id = id;

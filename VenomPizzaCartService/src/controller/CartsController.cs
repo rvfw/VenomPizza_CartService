@@ -26,26 +26,32 @@ public class CartsController:Controller
         return Ok();
     }
 
-    [HttpPost("{id}")]
-    public async Task<IActionResult> AddProductInCart([FromRoute]int id,[FromQuery] int quantity=1)
-    {
-        int userId = int.Parse(Request.Headers["Id"].ToString());
-        var createdProduct = await _cartService.AddProductToCart(userId,id,quantity);
-        return CreatedAtAction(null,createdProduct.CartId,createdProduct);
-    }
-
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProductQuantity([FromRoute] int id, [FromQuery] int quantity)
+    public async Task<IActionResult> UpdateProductQuantity([FromRoute] int id, [FromRoute] int priceId, [FromQuery] int quantity)
     {
         int userId = int.Parse(Request.Headers["Id"].ToString());
-        return Ok(await _cartService.UpdateProductQuantity(userId, id, quantity));
+        try
+        {
+            return Ok(await _cartService.UpdateProductQuantity(userId, id, priceId, quantity));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProductInCart([FromRoute] int id)
+    public async Task<IActionResult> DeleteProductInCart([FromRoute] int id, [FromRoute] int priceId)
     {
         int userId = int.Parse(Request.Headers["Id"].ToString());
-        await _cartService.DeleteProductInCart(userId, id);
-        return Ok();
+        try
+        {
+            await _cartService.DeleteProductInCart(userId, id, priceId);
+            return Ok();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 }

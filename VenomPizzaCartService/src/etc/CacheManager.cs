@@ -22,6 +22,13 @@ public class CacheManager : ICacheManager, IAsyncDisposable
         catch (Exception ex) { _logger.LogError("Не удалось загрузить снапшот продуктов"); }
         productsCache = productsCache == null ? new() : productsCache;
         _logger.LogInformation($"Загружено в кэш {productsCache.Keys.Count()} товаров");
+        foreach (var product in productsCache.Values)
+        {
+            Console.Write(product.Title + " " + product.Id + ": ");
+            foreach (var price in product.Prices)
+                Console.Write(price.Size+" = "+price.Price+"; ");
+            Console.WriteLine();
+        }
         _snapshotTimer = new Timer(SaveSnapshotCallback, null, TimeSpan.FromMinutes(60), TimeSpan.FromMinutes(60));
     }
 
@@ -30,26 +37,29 @@ public class CacheManager : ICacheManager, IAsyncDisposable
         return productsCache;
     }
 
-    public void AddProductInfo(ProductShortInfoDto product)
+    public async Task AddProductInfo(ProductShortInfoDto product)
     {
         if (productsCache.ContainsKey(product.Id))
             throw new ArgumentException($"Продукт с Id {product.Id} уже существует");
         productsCache[product.Id] = product;
+        await SaveSnapshot();
     }
 
-    public void UpdateProductInfo(ProductShortInfoDto info)
+    public async Task UpdateProductInfo(ProductShortInfoDto info)
     {
         if (productsCache.TryGetValue(info.Id, out var foundedProduct))
             productsCache[info.Id] = info;
         else
             throw new KeyNotFoundException($"Продукт с Id {info.Id} не найден в кэше");
+        await SaveSnapshot();
     }
 
-    public void DeleteProductInfo(int id)
+    public async Task DeleteProductInfo(int id)
     {
         if (!productsCache.TryGetValue(id, out var foundedProduct))
             throw new KeyNotFoundException($"Продукт с ID {id} не найден");
         productsCache.Remove(id, out var _);
+        await SaveSnapshot();
     }
 
     public async void SaveSnapshotCallback(object? state)

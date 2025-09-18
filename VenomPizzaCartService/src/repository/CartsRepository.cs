@@ -30,10 +30,10 @@ public class CartsRepository:ICartsRepository
         return cart;
     }
 
-    public async Task<CartProduct> AddProduct(int cartId, int productId, int quantity)
+    public async Task<CartProduct> AddProduct(int cartId, int productId, int priceId, int quantity)
     {
         _logger.LogInformation($"Добавляем продукт {productId} в корзину {cartId} в кол-ве {quantity}");
-        var createdProduct = _context.CartProducts.Add(new CartProduct(cartId, productId, quantity)).Entity;
+        var createdProduct = _context.CartProducts.Add(new CartProduct(cartId, productId,priceId, quantity)).Entity;
         await _context.SaveChangesAsync();
         return createdProduct;
     }
@@ -63,8 +63,11 @@ public class CartsRepository:ICartsRepository
         foreach (var productInCart in cart.Products)
         {
             if (!_cacheManager.GetProductCache().TryGetValue(productInCart.ProductId, out var foundedProduct))
-                throw new KeyNotFoundException($"Не найдена цена продукта {productInCart.ProductId}");
-            sum += foundedProduct.Price * productInCart.Quantity;
+                throw new KeyNotFoundException($"Не найдены цены продукта {productInCart.ProductId}");
+            var priceVariant = foundedProduct.Prices.FirstOrDefault(x => x.PriceId == productInCart.PriceId);
+            if(priceVariant==null)
+                throw new KeyNotFoundException($"Не найдена цена {productInCart.PriceId} продукта {productInCart.ProductId}");
+            sum += priceVariant.Price * productInCart.Quantity;
         }
         _logger.LogInformation($"Цена товаров из корзины {cartId}: {sum}");
         return sum;
@@ -72,12 +75,12 @@ public class CartsRepository:ICartsRepository
     #endregion
 
     #region update
-    public async Task<CartProduct> UpdateProductQuantity(int cartId, int productId, int quantity)
+    public async Task<CartProduct> UpdateProductQuantity(int cartId, int productId, int priceId, int quantity)
     {
         _logger.LogInformation($"Обновляем продукт {productId} в корзину {cartId} на новое кол-во: {quantity}");
         var foundedProduct = await _context.CartProducts.FirstOrDefaultAsync(cp => cp.CartId == cartId && cp.ProductId == productId);
         if (foundedProduct == null)
-            throw new KeyNotFoundException($"Продукт с ID {productId} не найден");
+            throw new KeyNotFoundException($"Продукт с ID {productId} не найден в корзине с ID {cartId}");
         foundedProduct.Quantity = quantity;
         await _context.SaveChangesAsync();
         _logger.LogInformation($"Обновленный продукт {productId}. Новое кол-во: {quantity}");
@@ -86,12 +89,12 @@ public class CartsRepository:ICartsRepository
     #endregion
 
     #region delete
-    public async Task DeleteProductInCart(int cartId, int productId)
+    public async Task DeleteProductInCart(int cartId, int productId, int priceId)
     {
         _logger.LogInformation($"Из корзины {cartId} удаляем продукт {productId}");
         var foundedProduct = await _context.CartProducts.FirstOrDefaultAsync(x => x.CartId == cartId && x.ProductId == productId);
         if (foundedProduct == null)
-            throw new KeyNotFoundException($"Продукт с ID {productId} не найден");
+            throw new KeyNotFoundException($"Продукт с ID {productId} не найден в корзине с ID {cartId}");
         _context.CartProducts.Remove(foundedProduct);
         _logger.LogInformation($"Продукт {productId} удален из корзины {cartId}");
         await _context.SaveChangesAsync();

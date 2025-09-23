@@ -62,7 +62,8 @@ public class CartsRepository:ICartsRepository
         decimal sum = 0;
         foreach (var productInCart in cart.Products)
         {
-            if (!_cacheManager.GetProductCache().TryGetValue(productInCart.ProductId, out var foundedProduct))
+            var foundedProduct = _cacheManager.GetProductCacheById(productInCart.ProductId);
+            if (foundedProduct == null)
                 throw new KeyNotFoundException($"Не найдены цены продукта {productInCart.ProductId}");
             var priceVariant = foundedProduct.Prices.FirstOrDefault(x => x.PriceId == productInCart.PriceId);
             if(priceVariant==null)

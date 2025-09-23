@@ -1,6 +1,11 @@
-﻿using System.Collections.Concurrent;
+﻿using Confluent.Kafka;
+using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 using VenomPizzaCartService.src.dto;
 using VenomPizzaCartService.src.etc;
+using VenomPizzaCartService.src.Kafka;
 using VenomPizzaCartService.src.model;
 using VenomPizzaCartService.src.repository;
 
@@ -10,10 +15,16 @@ public class CartsService:ICartsService
 {
     private readonly ICartsRepository _cartRepository;
     private readonly ICacheManager _cacheManager;
-    public CartsService(ICartsRepository repository,ICacheManager cacheManager)
+    private readonly ILogger<CartsService> _logger;
+    private readonly IProducer<string, string> _producer;
+    private readonly KafkaSettings _kafkaSettings;
+    public CartsService(ICartsRepository repository,ICacheManager cacheManager,ILogger<CartsService> logger, IProducer<string,string> producer, IOptions<KafkaSettings> kafkaSettings)
     {
         _cartRepository = repository;
         _cacheManager = cacheManager;
+        _logger = logger;
+        _producer = producer;
+        _kafkaSettings = kafkaSettings.Value;
     }
 
     public async Task<Cart> GetCartById(int id)
@@ -30,12 +41,26 @@ public class CartsService:ICartsService
         return await _cartRepository.GetCartPrice(id);
     }
 
-    public async Task CreateOrder(int cartId,string address,DateTime? byTheTime)
+    public async Task<OrderRequestDto> CreateOrder(int cartId,string address,DateTime? byTheTime)
     {
+        _logger.LogInformation($"Начата сборка заказа корзины {cartId}");
         var cart=await _cartRepository.GetCartById(cartId);
         if (cart==null || cart.Products.Count == 0)
             throw new BadHttpRequestException("Нельзя создать заказ с пустой корзиной");
-        OrderRequestDto orderRequestDto = new OrderRequestDto(cartId,cart.Products,await _cartRepository.GetCartPrice(cartId),address,byTheTime);
+        List<OrderProductDto> orderProducts = cart.Products.Select(x =>
+        {
+            var cache = _cacheManager.GetProductCacheById(x.ProductId);
+            if (cache == null)
+                throw new NullReferenceException($"Не найден продукт с Id {x.ProductId} в кэше");
+            var price = cache.Prices.FirstOrDefault(p => p.PriceId == x.PriceId);
+            if (price == null)
+                throw new NullReferenceException($"Не найдена цена {x.PriceId} продукта с Id {x.ProductId} в кэше");
+            return new OrderProductDto(x.ProductId, cache.Title, price.Size, cache.ImageUrl, x.Quantity, price.Price);
+        }).ToList();
+        OrderRequestDto orderRequestDto = new OrderRequestDto(cartId,orderProducts,await _cartRepository.GetCartPrice(cartId),address,byTheTime);
+        _logger.LogInformation($"Собран заказ {orderRequestDto.Id} на сумму {orderRequestDto.Price}");
+        await SendInOrderRequestCreatedTopic(orderRequestDto);
+        return orderRequestDto;
     }
 
     public async Task<CartProduct> AddProductToCart(int cartId, int productId, int priceId, int quantity)
@@ -71,5 +96,16 @@ public class CartsService:ICartsService
     public async Task DeleteProductInfo(ProductShortInfoDto product)
     {
         await _cacheManager.DeleteProductInfo(product.Id);
+    }
+
+    private async Task SendInOrderRequestCreatedTopic(OrderRequestDto dto)
+    {
+        var kafkaMessage = new Message<string, string>
+        {
+            Key = dto.UserId.ToString(),
+            Value = JsonSerializer.Serialize(dto)
+        };
+        await _producer.ProduceAsync(_kafkaSettings.Topics.OrderRequestCreated, kafkaMessage);
+        _logger.LogInformation($"Отправлено {kafkaMessage.Value} в {_kafkaSettings.Topics.OrderRequestCreated}");
     }
 }

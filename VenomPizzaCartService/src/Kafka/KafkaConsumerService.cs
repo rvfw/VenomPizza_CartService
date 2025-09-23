@@ -70,6 +70,10 @@ public class KafkaConsumerService : BackgroundService
                 _logger.LogInformation($"Получено из топика {result.Topic}:\n{result.Message.Value}");
                 await ProccessRequestAsync(cartsService, result.Topic, result.Message.Value); ;
             }
+            catch(TaskCanceledException ex)
+            {
+                _logger.LogDebug(ex, "Кафка консьюмер остановлен");
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка обработки запроса");

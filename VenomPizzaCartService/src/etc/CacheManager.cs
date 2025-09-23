@@ -32,9 +32,11 @@ public class CacheManager : ICacheManager, IAsyncDisposable
         _snapshotTimer = new Timer(SaveSnapshotCallback, null, TimeSpan.FromMinutes(60), TimeSpan.FromMinutes(60));
     }
 
-    public ConcurrentDictionary<int, ProductShortInfoDto> GetProductCache()
+    public ProductShortInfoDto? GetProductCacheById(int id)
     {
-        return productsCache;
+        ProductShortInfoDto? foundedProduct;
+        productsCache.TryGetValue(id, out foundedProduct);
+        return foundedProduct;
     }
 
     public async Task AddProductInfo(ProductShortInfoDto product)

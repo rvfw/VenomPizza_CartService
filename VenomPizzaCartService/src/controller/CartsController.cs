@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Amazon.Runtime.Credentials;
+using Microsoft.AspNetCore.Mvc;
+using VenomPizzaCartService.src.attribute;
+using VenomPizzaCartService.src.dto;
 using VenomPizzaCartService.src.service;
 
 namespace VenomPizzaCartService.src.controller;
@@ -13,23 +16,35 @@ public class CartsController:Controller
         _cartService = service;
     }
 
+    [ValidateUserId]
     [HttpGet]
     public async Task<IActionResult> GetCartById()
     {
-        int userId = int.Parse(Request.Headers["Id"].ToString());
+        int userId = (int)HttpContext.Items["Id"]!;
         return Ok(await _cartService.GetCartById(userId));
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateOrder()
+    [ValidateUserId]
+    [HttpPost("order")]
+    public async Task<IActionResult> CreateOrder(CreateOrderRequestDto dto)
     {
-        return Ok();
+        int userId = (int)HttpContext.Items["Id"]!;
+        try
+        {
+            var orderRequest = await _cartService.CreateOrder(userId, dto.Address, dto.ByTheTime);
+            return Ok(orderRequest);
+        }
+        catch (NullReferenceException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
+    [ValidateUserId]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateProductQuantity([FromRoute] int id, [FromRoute] int priceId, [FromQuery] int quantity)
     {
-        int userId = int.Parse(Request.Headers["Id"].ToString());
+        int userId = (int)HttpContext.Items["Id"]!;
         try
         {
             return Ok(await _cartService.UpdateProductQuantity(userId, id, priceId, quantity));
@@ -40,10 +55,11 @@ public class CartsController:Controller
         }
     }
 
+    [ValidateUserId]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProductInCart([FromRoute] int id, [FromRoute] int priceId)
     {
-        int userId = int.Parse(Request.Headers["Id"].ToString());
+        int userId = (int)HttpContext.Items["Id"]!;
         try
         {
             await _cartService.DeleteProductInCart(userId, id, priceId);

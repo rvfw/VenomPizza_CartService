@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 using VenomPizzaCartService.src.context;
 using VenomPizzaCartService.src.dto;
@@ -13,8 +14,8 @@ public class CartsRepository:ICartsRepository
     private readonly CartsDbContext _context;
     private readonly ILogger<CartsRepository> _logger;
     private readonly Timer _snapshotTimer;
-    private readonly ICacheManager _cacheManager;
-    public CartsRepository(CartsDbContext context,ILogger<CartsRepository> logger, ICacheManager cacheManager)
+    private readonly ICloudStorageProvider _cacheManager;
+    public CartsRepository(CartsDbContext context,ILogger<CartsRepository> logger, ICloudStorageProvider cacheManager)
     {
         _context = context;
         _logger = logger;
@@ -57,9 +58,12 @@ public class CartsRepository:ICartsRepository
 
     public async Task<decimal> GetCartPrice(int cartId)
     {
-        _logger.LogInformation($"Подсчет цены товаров из корзины {cartId}");
         var cart = await GetCartById(cartId);
+        if (cart == null)
+            return 0;
+        _logger.LogInformation($"Подсчет цены товаров из корзины {cartId}");
         decimal sum = 0;
+
         foreach (var productInCart in cart.Products)
         {
             var foundedProduct = _cacheManager.GetProductCacheById(productInCart.ProductId);

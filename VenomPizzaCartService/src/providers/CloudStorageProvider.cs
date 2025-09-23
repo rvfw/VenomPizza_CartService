@@ -4,13 +4,13 @@ using VenomPizzaCartService.src.dto;
 
 namespace VenomPizzaCartService.src.etc;
 
-public class CacheManager : ICacheManager, IAsyncDisposable
+public class CloudStorageProvider : ICloudStorageProvider, IAsyncDisposable
 {
-    private readonly ILogger<CacheManager> _logger;
+    private readonly ILogger<CloudStorageProvider> _logger;
     private ConcurrentDictionary<int, ProductShortInfoDto> productsCache = new();
     private readonly CloudStorage _cloudStorage;
     private readonly Timer _snapshotTimer;
-    public CacheManager(ILogger<CacheManager> logger)
+    public CloudStorageProvider(ILogger<CloudStorageProvider> logger)
     {
         _logger = logger;
         _cloudStorage = new CloudStorage();

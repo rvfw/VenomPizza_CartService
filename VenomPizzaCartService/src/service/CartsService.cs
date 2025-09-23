@@ -7,37 +7,50 @@ using VenomPizzaCartService.src.dto;
 using VenomPizzaCartService.src.etc;
 using VenomPizzaCartService.src.Kafka;
 using VenomPizzaCartService.src.model;
+using VenomPizzaCartService.src.providers;
 using VenomPizzaCartService.src.repository;
 
 namespace VenomPizzaCartService.src.service;
 
 public class CartsService:ICartsService
 {
+    private readonly TimeSpan cartExpiration = TimeSpan.FromMinutes(15);
+
     private readonly ICartsRepository _cartRepository;
-    private readonly ICacheManager _cacheManager;
+    private readonly ICloudStorageProvider _cloudStorageProvider;
     private readonly ILogger<CartsService> _logger;
     private readonly IProducer<string, string> _producer;
     private readonly KafkaSettings _kafkaSettings;
-    public CartsService(ICartsRepository repository,ICacheManager cacheManager,ILogger<CartsService> logger, IProducer<string,string> producer, IOptions<KafkaSettings> kafkaSettings)
+    private readonly ICacheProvider _cacheProvider;
+    public CartsService(ICartsRepository repository,ICloudStorageProvider cloudStorageProvider, ILogger<CartsService> logger, 
+        IProducer<string,string> producer, IOptions<KafkaSettings> kafkaSettings,CacheProvider cacheProvider)
     {
         _cartRepository = repository;
-        _cacheManager = cacheManager;
+        _cloudStorageProvider = cloudStorageProvider;
         _logger = logger;
         _producer = producer;
         _kafkaSettings = kafkaSettings.Value;
+        _cacheProvider = cacheProvider;
     }
 
     public async Task<Cart> GetCartById(int id)
     {
+        var cartFromCache = await _cacheProvider.GetAsync<Cart>(id);
+        if (cartFromCache != null)
+            return cartFromCache;
         var foundedCart= await _cartRepository.GetCartById(id);
         if (foundedCart == null)
             return new Cart() { Id = id };
         foundedCart.TotalPrice=await _cartRepository.GetCartPrice(id);
+        await _cacheProvider.SetAsync(id, foundedCart,cartExpiration);
         return foundedCart;
     }
 
     public async Task<decimal> GetCartPrice(int id)
     {
+        var cartFromCache = await _cacheProvider.GetAsync<Cart>(id);
+        if (cartFromCache != null)
+            return cartFromCache.TotalPrice;
         return await _cartRepository.GetCartPrice(id);
     }
 
@@ -49,7 +62,7 @@ public class CartsService:ICartsService
             throw new BadHttpRequestException("Нельзя создать заказ с пустой корзиной");
         List<OrderProductDto> orderProducts = cart.Products.Select(x =>
         {
-            var cache = _cacheManager.GetProductCacheById(x.ProductId);
+            var cache = _cloudStorageProvider.GetProductCacheById(x.ProductId);
             if (cache == null)
                 throw new NullReferenceException($"Не найден продукт с Id {x.ProductId} в кэше");
             var price = cache.Prices.FirstOrDefault(p => p.PriceId == x.PriceId);
@@ -65,7 +78,12 @@ public class CartsService:ICartsService
 
     public async Task<CartProduct> AddProductToCart(int cartId, int productId, int priceId, int quantity)
     {
-        var cart = await _cartRepository.GetCartById(cartId) ?? await _cartRepository.CreateCart(cartId);
+        var cart = await _cartRepository.GetCartById(cartId);
+        if(cart==null)
+            cart=await _cartRepository.CreateCart(cartId);
+        else
+            await _cacheProvider.RemoveAsync(cartId);
+
         var existingProduct = await _cartRepository.GetProductById(cartId, productId);
         if (existingProduct != null)
             return await _cartRepository.UpdateProductQuantity(cartId,productId,priceId, quantity);
@@ -75,27 +93,30 @@ public class CartsService:ICartsService
 
     public async Task<CartProduct> UpdateProductQuantity(int cartId, int productId,int priceId, int quantity)
     {
-        return await _cartRepository.UpdateProductQuantity(cartId,productId, priceId, quantity);
+        var product=await _cartRepository.UpdateProductQuantity(cartId, productId, priceId, quantity);
+        await  _cacheProvider.RemoveAsync(cartId);
+        return product;
     }
 
     public async Task DeleteProductInCart(int cartId, int priceId, int productId)
     {
         await _cartRepository.DeleteProductInCart(cartId, priceId, productId);
+        await _cacheProvider.RemoveAsync(cartId);
     }
 
     public async Task AddProductInfo(ProductShortInfoDto product)
     {
-        await _cacheManager.AddProductInfo(product);
+        await _cloudStorageProvider.AddProductInfo(product);
     }
 
     public async Task UpdateProductInfo(ProductShortInfoDto product)
     {
-        await _cacheManager.UpdateProductInfo(product);
+        await _cloudStorageProvider.UpdateProductInfo(product);
     }
 
     public async Task DeleteProductInfo(ProductShortInfoDto product)
     {
-        await _cacheManager.DeleteProductInfo(product.Id);
+        await _cloudStorageProvider.DeleteProductInfo(product.Id);
     }
 
     private async Task SendInOrderRequestCreatedTopic(OrderRequestDto dto)

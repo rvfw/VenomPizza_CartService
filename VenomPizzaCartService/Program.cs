@@ -1,9 +1,11 @@
 using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using VenomPizzaCartService.src.context;
 using VenomPizzaCartService.src.etc;
 using VenomPizzaCartService.src.Kafka;
+using VenomPizzaCartService.src.providers;
 using VenomPizzaCartService.src.repository;
 using VenomPizzaCartService.src.service;
 
@@ -14,11 +16,18 @@ builder.Services.AddDbContext<CartsDbContext>(options =>
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    var config = ConfigurationOptions.Parse(builder.Configuration.GetConnectionString("Redis"));
+    return ConnectionMultiplexer.Connect(config);
+});
+
 builder.Services.AddScoped<ICartsService, CartsService>();
 builder.Services.AddScoped<CartsService>();
 builder.Services.AddScoped<ICartsRepository, CartsRepository>();
-builder.Services.AddScoped<ICartsRepository,CartsRepository>();
-builder.Services.AddSingleton<ICacheManager, CacheManager>();
+builder.Services.AddScoped<CacheProvider>();
+builder.Services.AddScoped<ICacheProvider, CacheProvider>();
+builder.Services.AddSingleton<ICloudStorageProvider, CloudStorageProvider>();
 
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("Kafka"));
 builder.Services.AddSingleton(provider =>

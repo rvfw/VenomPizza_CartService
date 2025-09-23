@@ -17,7 +17,7 @@ public class CartsServiceTest
     public CartsServiceTest()
     {
         _mockRepository = new Mock<ICartsRepository>();
-        _service = new CartsService(_mockRepository.Object,new Mock<ICacheManager>().Object);
+        _service = new CartsService(_mockRepository.Object,new Mock<ICloudStorageProvider>().Object);
         _validCart = new Cart { Id = 1, Products = { new CartProduct() { ProductId = 1 } } };
     }
 

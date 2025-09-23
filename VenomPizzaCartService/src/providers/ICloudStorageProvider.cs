@@ -4,7 +4,7 @@ using VenomPizzaCartService.src.dto;
 
 namespace VenomPizzaCartService.src.etc;
 
-public interface ICacheManager
+public interface ICloudStorageProvider
 {
     ProductShortInfoDto? GetProductCacheById(int id);
     Task AddProductInfo(ProductShortInfoDto info);

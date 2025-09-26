@@ -14,39 +14,47 @@ public class CacheProvider : ICacheProvider
         _database=redis.GetDatabase();
         _logger=logger;
     }
-    public async Task<T?> GetAsync<T>(int key)
+    public async Task<T?> GetAsync<T>(int id)
     {
+        var key= $"{ typeof(T).Name }:{ id}";
         try
         {
-            var foundedValue = await _database.StringGetAsync(key.ToString());
+            var foundedValue = await _database.StringGetAsync(key);
             if (foundedValue.IsNullOrEmpty)
                 return default;
+            _logger.LogInformation($"Получено значение из редиса {key}");
             return JsonSerializer.Deserialize<T>(foundedValue!);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Не удалось получить в редис значение с ключом {key}: {ex.Message}");
+            _logger.LogError($"Не удалось получить в редис значение {key}");
             return default;
         }
     }
 
-    public async Task SetAsync<T>(int key, T value, TimeSpan expiration)
+    public async Task SetAsync<T>(int id, T value, TimeSpan expiration)
     {
+        var key = $"{typeof(T).Name}:{id}";
         try
         {
             var json = JsonSerializer.Serialize(value);
-            await _database.StringSetAsync($"{value.GetType().Name}:{key}", json, expiration);
+            await _database.StringSetAsync(key, json, expiration);
+            _logger.LogInformation($"Установлено значение в редисе для {key}");
         }
         catch(Exception ex)
         {
             _logger.LogWarning($"Не удалось записать в редис значение с ключом {key}: {ex.Message}");
         }
     }
-    public async Task<bool> RemoveAsync(int key)
+    public async Task<bool> RemoveAsync<T>(int id)
     {
+        var key = $"{typeof(T).Name}:{id}";
         try
         {
-            return await _database.KeyDeleteAsync(key.ToString());
+            var res= await _database.KeyDeleteAsync(key);
+            if(res)
+                _logger.LogInformation($"Удалено значение в редисе: {key}");
+            return res;
         }
         catch(Exception ex)
         {

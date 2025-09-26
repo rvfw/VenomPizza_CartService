@@ -16,7 +16,7 @@ public class CartsDbContext:DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CartProduct>()
-            .HasKey(cp => new { cp.CartId, cp.ProductId });
+            .HasKey(cp => new { cp.CartId, cp.ProductId, cp.PriceId });
         modelBuilder.Entity<CartProduct>()
             .HasOne(cp => cp.Cart)
             .WithMany(c => c.Products)

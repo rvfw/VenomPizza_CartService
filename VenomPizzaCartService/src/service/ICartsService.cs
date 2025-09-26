@@ -10,7 +10,7 @@ public interface ICartsService
     Task<OrderRequestDto> CreateOrder(int cartId, string address, DateTime? byTheTime);
     Task<CartProduct> AddProductToCart(int cartId, int productId, int priceId, int quantity);
     Task<CartProduct> UpdateProductQuantity(int cartId, int productId, int priceId, int quantity);
-    Task DeleteProductInCart(int cartId, int priceId, int productId);
+    Task DeleteProductInCart(int cartId, int productId, int priceId);
     Task AddProductInfo(ProductShortInfoDto product);
     Task UpdateProductInfo(ProductShortInfoDto product);
     Task DeleteProductInfo(ProductShortInfoDto product);

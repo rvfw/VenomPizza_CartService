@@ -1,9 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Confluent.Kafka;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Moq;
 using VenomPizzaCartService.src.context;
 using VenomPizzaCartService.src.dto;
 using VenomPizzaCartService.src.etc;
+using VenomPizzaCartService.src.Kafka;
 using VenomPizzaCartService.src.model;
+using VenomPizzaCartService.src.providers;
 using VenomPizzaCartService.src.repository;
 using VenomPizzaCartService.src.service;
 
@@ -13,11 +18,14 @@ public class CartsServiceTest
 {
     private readonly CartsService _service;
     private readonly Mock<ICartsRepository> _mockRepository;
+    private readonly Mock<ICloudStorageProvider> _mockCloudStorageProvider;
     private readonly Cart _validCart;
     public CartsServiceTest()
     {
+        _mockCloudStorageProvider = new Mock<ICloudStorageProvider>();
         _mockRepository = new Mock<ICartsRepository>();
-        _service = new CartsService(_mockRepository.Object,new Mock<ICloudStorageProvider>().Object);
+        _service = new CartsService(_mockRepository.Object,_mockCloudStorageProvider.Object, 
+            NullLogger<CartsService>.Instance, new Mock<IProducer<string,string>>().Object, new Mock<IOptions<KafkaSettings>>().Object,new Mock<ICacheProvider>().Object);
         _validCart = new Cart { Id = 1, Products = { new CartProduct() { ProductId = 1 } } };
     }
 
@@ -79,14 +87,17 @@ public class CartsServiceTest
         Assert.Equal(2, res.ProductId);
         Assert.Equal(3, res.PriceId);
         Assert.Equal(99, res.Quantity);
-    } 
+    }
     #endregion
 
     #region read
     [Fact]
     public async Task GetCartById_ExistingCart()
     {
+        var cachedProducts = new List<ProductShortInfoDto>() { new ProductShortInfoDto(1, "") 
+        { Prices = new List<PriceVariantDto>() { new PriceVariantDto(0, "Стандартная", 1) } } };
         _mockRepository.Setup(rep => rep.GetCartById(1)).ReturnsAsync(_validCart);
+        _mockCloudStorageProvider.Setup(cloud => cloud.GetProductsCacheById(new List<int>() { 1 })).Returns(cachedProducts);
 
         var res = await _service.GetCartById(1);
 

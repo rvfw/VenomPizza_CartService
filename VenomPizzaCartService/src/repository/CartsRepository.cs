@@ -13,13 +13,10 @@ public class CartsRepository:ICartsRepository
 {
     private readonly CartsDbContext _context;
     private readonly ILogger<CartsRepository> _logger;
-    private readonly Timer _snapshotTimer;
-    private readonly ICloudStorageProvider _cacheManager;
-    public CartsRepository(CartsDbContext context,ILogger<CartsRepository> logger, ICloudStorageProvider cacheManager)
+    public CartsRepository(CartsDbContext context,ILogger<CartsRepository> logger)
     {
         _context = context;
         _logger = logger;
-        _cacheManager = cacheManager;
     }
 
     #region create
@@ -48,47 +45,24 @@ public class CartsRepository:ICartsRepository
         return await _context.Carts.AsNoTracking().Include(cp => cp.Products).FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<CartProduct?> GetProductById(int cartId, int productId)
+    public async Task<CartProduct?> GetProductById(int cartId, int productId, int priceId)
     {
-        _logger.LogInformation($"Получаем продукт {productId} из корзины {cartId}");
+        _logger.LogInformation($"Получаем продукт {productId} с ценой {priceId} из корзины {cartId}");
         return await _context.CartProducts
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.CartId == cartId && x.ProductId == productId);
-    }
-
-    public async Task<decimal> GetCartPrice(int cartId)
-    {
-        var cart = await GetCartById(cartId);
-        if (cart == null)
-            return 0;
-        _logger.LogInformation($"Подсчет цены товаров из корзины {cartId}");
-        decimal sum = 0;
-
-        foreach (var productInCart in cart.Products)
-        {
-            var foundedProduct = _cacheManager.GetProductCacheById(productInCart.ProductId);
-            if (foundedProduct == null)
-                throw new KeyNotFoundException($"Не найдены цены продукта {productInCart.ProductId}");
-            var priceVariant = foundedProduct.Prices.FirstOrDefault(x => x.PriceId == productInCart.PriceId);
-            if(priceVariant==null)
-                throw new KeyNotFoundException($"Не найдена цена {productInCart.PriceId} продукта {productInCart.ProductId}");
-            sum += priceVariant.Price * productInCart.Quantity;
-        }
-        _logger.LogInformation($"Цена товаров из корзины {cartId}: {sum}");
-        return sum;
+            .FirstOrDefaultAsync(x => x.CartId == cartId && x.ProductId == productId && x.PriceId==priceId);
     }
     #endregion
 
     #region update
     public async Task<CartProduct> UpdateProductQuantity(int cartId, int productId, int priceId, int quantity)
     {
-        _logger.LogInformation($"Обновляем продукт {productId} в корзину {cartId} на новое кол-во: {quantity}");
-        var foundedProduct = await _context.CartProducts.FirstOrDefaultAsync(cp => cp.CartId == cartId && cp.ProductId == productId);
+        _logger.LogInformation($"Обновляем продукт {productId} в корзине {cartId} на новое кол-во: {quantity}");
+        var foundedProduct = await GetProductById(cartId, productId, priceId);
         if (foundedProduct == null)
-            throw new KeyNotFoundException($"Продукт с ID {productId} не найден в корзине с ID {cartId}");
+            throw new KeyNotFoundException($"Продукт {productId} с ценой {priceId} не найден в корзине {cartId}");
         foundedProduct.Quantity = quantity;
         await _context.SaveChangesAsync();
-        _logger.LogInformation($"Обновленный продукт {productId}. Новое кол-во: {quantity}");
+        _logger.LogInformation($"Обновленный продукт {productId} с ценой {priceId}. Новое кол-во: {quantity}");
         return foundedProduct;
     }
     #endregion
@@ -97,11 +71,11 @@ public class CartsRepository:ICartsRepository
     public async Task DeleteProductInCart(int cartId, int productId, int priceId)
     {
         _logger.LogInformation($"Из корзины {cartId} удаляем продукт {productId}");
-        var foundedProduct = await _context.CartProducts.FirstOrDefaultAsync(x => x.CartId == cartId && x.ProductId == productId);
+        var foundedProduct = await GetProductById(cartId,productId,priceId);
         if (foundedProduct == null)
-            throw new KeyNotFoundException($"Продукт с ID {productId} не найден в корзине с ID {cartId}");
+            throw new KeyNotFoundException($"Продукт {productId} и ценой {priceId} не найден в корзине {cartId}");
         _context.CartProducts.Remove(foundedProduct);
-        _logger.LogInformation($"Продукт {productId} удален из корзины {cartId}");
+        _logger.LogInformation($"Продукт {productId} с ценой {priceId} удален из корзины {cartId}");
         await _context.SaveChangesAsync();
     } 
     #endregion

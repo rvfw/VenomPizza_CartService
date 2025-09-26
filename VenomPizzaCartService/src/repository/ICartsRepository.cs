@@ -7,9 +7,8 @@ public interface ICartsRepository
 {
     Task<Cart> CreateCart(int cartId);
     Task<Cart?> GetCartById(int cartId);
-    Task<CartProduct?> GetProductById(int cartId,int productId);
+    Task<CartProduct?> GetProductById(int cartId,int productId, int priceId);
     Task<CartProduct> AddProduct(int cartId,int productId,int priceId, int quantity);
     Task<CartProduct> UpdateProductQuantity(int cartId, int productId, int priceId, int quantity);
-    Task DeleteProductInCart(int cartId, int priceId, int productId);
-    Task<decimal> GetCartPrice(int cartId);
+    Task DeleteProductInCart(int cartId, int productId, int priceId);
 }

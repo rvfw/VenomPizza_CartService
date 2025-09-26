@@ -57,7 +57,7 @@ public class CartsController:Controller
 
     [ValidateUserId]
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProductInCart([FromRoute] int id, [FromRoute] int priceId)
+    public async Task<IActionResult> DeleteProductInCart([FromRoute] int id, [FromQuery] int priceId)
     {
         int userId = (int)HttpContext.Items["Id"]!;
         try

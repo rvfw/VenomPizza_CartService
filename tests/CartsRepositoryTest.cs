@@ -19,7 +19,7 @@ public class CartsRepositoryTest
             .UseInMemoryDatabase(databaseName:Guid.NewGuid().ToString())
             .Options;
         _context = new CartsDbContext(options);
-        _repository = new CartsRepository(_context,NullLogger<CartsRepository>.Instance,new Mock<ICloudStorageProvider>().Object);
+        _repository = new CartsRepository(_context,NullLogger<CartsRepository>.Instance);
         _validCart = new Cart { Id = 1, Products = { new CartProduct() { ProductId = 1, PriceId=0 } } };
     }
 

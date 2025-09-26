@@ -1,7 +1,5 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.Options;
-using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using VenomPizzaCartService.src.dto;
 using VenomPizzaCartService.src.etc;
@@ -23,7 +21,7 @@ public class CartsService:ICartsService
     private readonly KafkaSettings _kafkaSettings;
     private readonly ICacheProvider _cacheProvider;
     public CartsService(ICartsRepository repository,ICloudStorageProvider cloudStorageProvider, ILogger<CartsService> logger, 
-        IProducer<string,string> producer, IOptions<KafkaSettings> kafkaSettings,CacheProvider cacheProvider)
+        IProducer<string,string> producer, IOptions<KafkaSettings> kafkaSettings,ICacheProvider cacheProvider)
     {
         _cartRepository = repository;
         _cloudStorageProvider = cloudStorageProvider;
@@ -41,7 +39,7 @@ public class CartsService:ICartsService
         var foundedCart= await _cartRepository.GetCartById(id);
         if (foundedCart == null)
             return new Cart() { Id = id };
-        foundedCart.TotalPrice=await _cartRepository.GetCartPrice(id);
+        foundedCart.TotalPrice = CalculateCartPrice(foundedCart);
         await _cacheProvider.SetAsync(id, foundedCart,cartExpiration);
         return foundedCart;
     }
@@ -51,7 +49,15 @@ public class CartsService:ICartsService
         var cartFromCache = await _cacheProvider.GetAsync<Cart>(id);
         if (cartFromCache != null)
             return cartFromCache.TotalPrice;
-        return await _cartRepository.GetCartPrice(id);
+
+        var cart = await GetCartById(id);
+        if (cart == null)
+            return 0;
+        var sum=CalculateCartPrice(cart);
+
+        _logger.LogInformation($"Цена товаров из корзины {id}: {sum}");
+
+        return sum;
     }
 
     public async Task<OrderRequestDto> CreateOrder(int cartId,string address,DateTime? byTheTime)
@@ -70,7 +76,7 @@ public class CartsService:ICartsService
                 throw new NullReferenceException($"Не найдена цена {x.PriceId} продукта с Id {x.ProductId} в кэше");
             return new OrderProductDto(x.ProductId, cache.Title, price.Size, cache.ImageUrl, x.Quantity, price.Price);
         }).ToList();
-        OrderRequestDto orderRequestDto = new OrderRequestDto(cartId,orderProducts,await _cartRepository.GetCartPrice(cartId),address,byTheTime);
+        OrderRequestDto orderRequestDto = new OrderRequestDto(cartId,orderProducts,CalculateCartPrice(cart),address,byTheTime);
         _logger.LogInformation($"Собран заказ {orderRequestDto.Id} на сумму {orderRequestDto.Price}");
         await SendInOrderRequestCreatedTopic(orderRequestDto);
         return orderRequestDto;
@@ -82,9 +88,9 @@ public class CartsService:ICartsService
         if(cart==null)
             cart=await _cartRepository.CreateCart(cartId);
         else
-            await _cacheProvider.RemoveAsync(cartId);
+            await _cacheProvider.RemoveAsync<Cart>(cartId);
 
-        var existingProduct = await _cartRepository.GetProductById(cartId, productId);
+        var existingProduct = await _cartRepository.GetProductById(cartId, productId,priceId);
         if (existingProduct != null)
             return await _cartRepository.UpdateProductQuantity(cartId,productId,priceId, quantity);
         else
@@ -94,14 +100,14 @@ public class CartsService:ICartsService
     public async Task<CartProduct> UpdateProductQuantity(int cartId, int productId,int priceId, int quantity)
     {
         var product=await _cartRepository.UpdateProductQuantity(cartId, productId, priceId, quantity);
-        await  _cacheProvider.RemoveAsync(cartId);
+        await _cacheProvider.RemoveAsync<Cart>(cartId);
         return product;
     }
 
-    public async Task DeleteProductInCart(int cartId, int priceId, int productId)
+    public async Task DeleteProductInCart(int cartId, int productId, int priceId)
     {
-        await _cartRepository.DeleteProductInCart(cartId, priceId, productId);
-        await _cacheProvider.RemoveAsync(cartId);
+        await _cartRepository.DeleteProductInCart(cartId, productId, priceId);
+        await _cacheProvider.RemoveAsync<Cart>(cartId);
     }
 
     public async Task AddProductInfo(ProductShortInfoDto product)
@@ -117,6 +123,20 @@ public class CartsService:ICartsService
     public async Task DeleteProductInfo(ProductShortInfoDto product)
     {
         await _cloudStorageProvider.DeleteProductInfo(product.Id);
+    }
+
+    private decimal CalculateCartPrice(Cart cart)
+    {
+        _logger.LogInformation($"Подсчет цены товаров из корзины {cart.Id}");
+
+        var productsId = cart.Products.Select(p => p.ProductId).Distinct().ToList();
+        var products = _cloudStorageProvider.GetProductsCacheById(productsId).ToDictionary(x => x.Id);
+        var sum = cart.Products.Sum(product =>
+        {
+            var price = products[product.ProductId].Prices[product.PriceId].Price;
+            return price * product.Quantity;
+        });
+        return sum;
     }
 
     private async Task SendInOrderRequestCreatedTopic(OrderRequestDto dto)

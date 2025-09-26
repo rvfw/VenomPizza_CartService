@@ -39,6 +39,15 @@ public class CloudStorageProvider : ICloudStorageProvider, IAsyncDisposable
         return foundedProduct;
     }
 
+    public IEnumerable<ProductShortInfoDto> GetProductsCacheById(IEnumerable<int> ids)
+    {
+        var foundedProducts= productsCache.Where(x=>ids.Contains(x.Key)).Select(x=>x.Value);
+        if (foundedProducts.Count() != ids.Count())
+            throw new NullReferenceException($"Не найдены некоторые продукты в кэше: " +
+                $"{String.Join(',', ids.Where(x => foundedProducts.FirstOrDefault(p => p.Id == x) == null))}");
+        return foundedProducts;
+    }
+
     public async Task AddProductInfo(ProductShortInfoDto product)
     {
         if (productsCache.ContainsKey(product.Id))

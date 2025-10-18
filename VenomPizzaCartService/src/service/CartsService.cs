@@ -71,6 +71,8 @@ public class CartsService:ICartsService
             var cache = _cloudStorageProvider.GetProductCacheById(x.ProductId);
             if (cache == null)
                 throw new NullReferenceException($"Не найден продукт с Id {x.ProductId} в кэше");
+            if (!cache.IsAvailable)
+                throw new BadHttpRequestException($"Продукт {cache.Title} с Id {cache.Id} не доступен для заказа на данный момент");
             var price = cache.Prices.FirstOrDefault(p => p.PriceId == x.PriceId);
             if (price == null)
                 throw new NullReferenceException($"Не найдена цена {x.PriceId} продукта с Id {x.ProductId} в кэше");

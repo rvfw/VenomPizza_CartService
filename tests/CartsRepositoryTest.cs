@@ -75,7 +75,7 @@ public class CartsRepositoryTest
     [Fact]
     public async Task GetProductById_NotFound()
     {
-        var foundedProduct = await _repository.GetProductById(1, 1);
+        var foundedProduct = await _repository.GetProductById(1, 1,1);
 
         Assert.Null(foundedProduct);
     }

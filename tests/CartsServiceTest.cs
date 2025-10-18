@@ -1,9 +1,7 @@
 ﻿using Confluent.Kafka;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
-using VenomPizzaCartService.src.context;
 using VenomPizzaCartService.src.dto;
 using VenomPizzaCartService.src.etc;
 using VenomPizzaCartService.src.Kafka;
@@ -34,13 +32,13 @@ public class CartsServiceTest
     public async Task AddProductToCart_AddProduct()
     {
         _mockRepository.Setup(rep => rep.GetCartById(1)).ReturnsAsync(new Cart() { Id = 1 });
-        _mockRepository.Setup(rep => rep.GetProductById(1, 2)).ReturnsAsync(() => null);
+        _mockRepository.Setup(rep => rep.GetProductById(1, 2,3)).ReturnsAsync(()=>null);
         _mockRepository.Setup(rep => rep.AddProduct(1, 2, 3, 4)).ReturnsAsync(new CartProduct(1, 2, 3, 4));
 
         var res = await _service.AddProductToCart(1, 2, 3, 4);
 
         _mockRepository.Verify(rep => rep.GetCartById(1), Times.Once());
-        _mockRepository.Verify(rep => rep.GetProductById(1, 2), Times.Once());
+        _mockRepository.Verify(rep => rep.GetProductById(1, 2,3), Times.Once());
         _mockRepository.Verify(rep => rep.AddProduct(1, 2, 3, 4), Times.Once());
         Assert.NotNull(res);
         Assert.Equal(1, res.CartId);
@@ -54,13 +52,13 @@ public class CartsServiceTest
     {
         _mockRepository.Setup(rep => rep.GetCartById(1)).ReturnsAsync(() => null);
         _mockRepository.Setup(rep => rep.CreateCart(1)).ReturnsAsync(new Cart() { Id = 1 });
-        _mockRepository.Setup(rep => rep.GetProductById(1, 2)).ReturnsAsync(() => null);
+        _mockRepository.Setup(rep => rep.GetProductById(1, 2,3)).ReturnsAsync(() => null);
         _mockRepository.Setup(rep => rep.AddProduct(1, 2, 3, 4)).ReturnsAsync(new CartProduct(1, 2, 3, 4));
 
         var res = await _service.AddProductToCart(1, 2, 3, 4);
 
         _mockRepository.Verify(rep => rep.GetCartById(1), Times.Once());
-        _mockRepository.Verify(rep => rep.GetProductById(1, 2), Times.Once());
+        _mockRepository.Verify(rep => rep.GetProductById(1, 2,3), Times.Once());
         _mockRepository.Verify(rep => rep.CreateCart(1), Times.Once());
         _mockRepository.Verify(rep => rep.AddProduct(1, 2, 3, 4), Times.Once());
         Assert.NotNull(res);
@@ -74,13 +72,13 @@ public class CartsServiceTest
     public async Task AddProductToCart_UpdateProductQuantity()
     {
         _mockRepository.Setup(rep => rep.GetCartById(1)).ReturnsAsync(new Cart() { Id = 1 });
-        _mockRepository.Setup(rep => rep.GetProductById(1, 2)).ReturnsAsync(() => new CartProduct(1, 2, 3, 4));
+        _mockRepository.Setup(rep => rep.GetProductById(1, 2,3)).ReturnsAsync(() => new CartProduct(1, 2, 3, 4));
         _mockRepository.Setup(rep => rep.UpdateProductQuantity(1, 2, 3, 99)).ReturnsAsync(new CartProduct(1, 2, 3, 99));
 
         var res = await _service.AddProductToCart(1, 2, 3, 99);
 
         _mockRepository.Verify(rep => rep.GetCartById(1), Times.Once());
-        _mockRepository.Verify(rep => rep.GetProductById(1, 2), Times.Once());
+        _mockRepository.Verify(rep => rep.GetProductById(1, 2,3), Times.Once());
         _mockRepository.Verify(rep => rep.UpdateProductQuantity(1, 2, 3, 99), Times.Once());
         Assert.NotNull(res);
         Assert.Equal(1, res.CartId);

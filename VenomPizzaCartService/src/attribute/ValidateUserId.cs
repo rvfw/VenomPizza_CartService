@@ -9,12 +9,12 @@ public class ValidateUserId : ActionFilterAttribute
 {
     public override void OnActionExecuting(ActionExecutingContext context)
     {
-        if (!context.HttpContext.Request.Headers.TryGetValue("Id", out var userIdString))
+        if (!context.HttpContext.Request.Cookies.TryGetValue("Id", out var userIdString))
         {
             context.Result = new BadRequestObjectResult(new
             {
                 Error = "Необходимо Id пользователя",
-                Details = "Необходима авторизация через заголовок 'Id', содержащий Id пользователя"
+                Details = "Необходима авторизация через 'Id' в Cookies, содержащий Id пользователя"
             });
             return;
         }

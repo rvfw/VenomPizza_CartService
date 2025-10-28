@@ -54,8 +54,6 @@ public class KafkaConsumerService : BackgroundService
             _kafkaSettings.Topics.CartUpdated,
         };
         _consumer.Subscribe(topics);
-        await using var scope = _serviceProvider.CreateAsyncScope();
-        var cartsService = scope.ServiceProvider.GetRequiredService<CartsService>();
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -67,6 +65,8 @@ public class KafkaConsumerService : BackgroundService
                     continue;
                 }
                 //var result =await Task.Run(()=> _consumer.Consume(stoppingToken),stoppingToken);
+                await using var scope = _serviceProvider.CreateAsyncScope();
+                var cartsService = scope.ServiceProvider.GetRequiredService<CartsService>();
                 _logger.LogInformation($"Получено из топика {result.Topic}:\n{result.Message.Value}");
                 await ProccessRequestAsync(cartsService, result.Topic, result.Message.Value); ;
             }

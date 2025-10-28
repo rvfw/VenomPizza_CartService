@@ -77,7 +77,7 @@ public class CartsRepository:ICartsRepository
         _context.CartProducts.Remove(foundedProduct);
         _logger.LogInformation($"Продукт {productId} с ценой {priceId} удален из корзины {cartId}");
         await _context.SaveChangesAsync();
-    } 
+    }
     #endregion
 
 }

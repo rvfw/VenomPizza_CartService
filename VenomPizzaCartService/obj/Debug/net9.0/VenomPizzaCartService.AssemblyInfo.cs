@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VenomPizzaCartService")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e6831a8465794cbac45d9347de9033d747cb0cc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8bc585c222a2ce330dc02f0a859204e22d5abe6b")]
 [assembly: System.Reflection.AssemblyProductAttribute("VenomPizzaCartService")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VenomPizzaCartService")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

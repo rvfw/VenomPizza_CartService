@@ -42,7 +42,10 @@ public class CartsRepository:ICartsRepository
     public async Task<Cart?> GetCartById(int id)
     {
         _logger.LogInformation($"Получаем корзину {id}");
-        return await _context.Carts.AsNoTracking().Include(cp => cp.Products).FirstOrDefaultAsync(x => x.Id == id);
+        return await _context.Carts
+            .AsNoTracking()
+            .Include(cp => cp.Products)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<CartProduct?> GetProductById(int cartId, int productId, int priceId)

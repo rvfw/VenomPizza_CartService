@@ -5,9 +5,7 @@ namespace VenomPizzaCartService.src.model;
 public class Cart
 {
     [Column("id")]
-    public int Id { get; set; }
-    public List<CartProduct> Products { get; set; }=new List<CartProduct>();
-    [Column("total_price")]
-    public decimal TotalPrice { get; set; }
+    public int Id { get; init; }
+    public List<CartProduct> Products { get; set; }=new();
     public Cart() { }
 }

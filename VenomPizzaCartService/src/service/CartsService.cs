@@ -31,42 +31,28 @@ public class CartsService:ICartsService
         _cacheProvider = cacheProvider;
     }
 
-    public async Task<Cart> GetCartById(int id)
+    public async Task<CartDto> GetCartById(int id)
     {
-        var cartFromCache = await _cacheProvider.GetAsync<Cart>(id);
+        var cartFromCache = await _cacheProvider.GetAsync<CartDto>(id);
         if (cartFromCache != null)
             return cartFromCache;
         var foundedCart= await _cartRepository.GetCartById(id);
         if (foundedCart == null)
-            return new Cart() { Id = id };
-        foundedCart.TotalPrice = CalculateCartPrice(foundedCart);
-        await _cacheProvider.SetAsync(id, foundedCart,cartExpiration);
-        return foundedCart;
+            return new CartDto(id);
+        var cartDto = new CartDto(foundedCart);
+        AddProductInfoInCart(cartDto);
+        cartDto.TotalPrice = CalculateCartPrice(cartDto);
+        await _cacheProvider.SetAsync(id, cartDto,cartExpiration);
+        return cartDto;
     }
-
-    public async Task<decimal> GetCartPrice(int id)
-    {
-        var cartFromCache = await _cacheProvider.GetAsync<Cart>(id);
-        if (cartFromCache != null)
-            return cartFromCache.TotalPrice;
-
-        var cart = await GetCartById(id);
-        if (cart == null)
-            return 0;
-        var sum=CalculateCartPrice(cart);
-
-        _logger.LogInformation($"Цена товаров из корзины {id}: {sum}");
-
-        return sum;
-    }
-
+    
     public async Task<OrderRequestDto> CreateOrder(int cartId,string address,DateTime? byTheTime)
     {
         _logger.LogInformation($"Начата сборка заказа корзины {cartId}");
-        var cart=await _cartRepository.GetCartById(cartId);
-        if (cart==null || cart.Products.Count == 0)
+        var foundedCart=await _cartRepository.GetCartById(cartId);
+        if (foundedCart==null || foundedCart.Products.Count == 0)
             throw new BadHttpRequestException("Нельзя создать заказ с пустой корзиной");
-        List<OrderProductDto> orderProducts = cart.Products.Select(x =>
+        List<OrderProductDto> orderProducts = foundedCart.Products.Select(x =>
         {
             var cache = _cloudStorageProvider.GetProductCacheById(x.ProductId);
             if (cache == null)
@@ -78,8 +64,11 @@ public class CartsService:ICartsService
                 throw new NullReferenceException($"Не найдена цена {x.PriceId} продукта с Id {x.ProductId} в кэше");
             return new OrderProductDto(x.ProductId, cache.Title, price.Size, cache.ImageUrl, x.Quantity, price.Price);
         }).ToList();
-        OrderRequestDto orderRequestDto = new OrderRequestDto(cartId,orderProducts,CalculateCartPrice(cart),address,byTheTime);
-        _logger.LogInformation($"Собран заказ {orderRequestDto.Id} на сумму {orderRequestDto.Price}");
+        var cartDto = new CartDto(foundedCart);
+        AddProductInfoInCart(cartDto);
+        OrderRequestDto orderRequestDto = new OrderRequestDto
+            (cartId,orderProducts,CalculateCartPrice(cartDto),address,byTheTime);
+        _logger.LogInformation($"Создание заказа {orderRequestDto.Id} на сумму {orderRequestDto.Price}");
         await SendInOrderRequestCreatedTopic(orderRequestDto);
         return orderRequestDto;
     }
@@ -127,17 +116,25 @@ public class CartsService:ICartsService
         await _cloudStorageProvider.DeleteProductInfo(product.Id);
     }
 
-    private decimal CalculateCartPrice(Cart cart)
+    private void AddProductInfoInCart(CartDto cartDto)
+    {
+        foreach (var product in cartDto.Products)
+        {
+            var foundedShortInfo=_cloudStorageProvider.GetProductCacheById(product.ProductId);
+            if (foundedShortInfo == null)
+                throw new KeyNotFoundException($"Не найдена информация о продукте {product.ProductId} в корзине {cartDto.Id}");
+            var productPrice=foundedShortInfo.Prices.FirstOrDefault(p => p.PriceId == product.PriceId);
+            if(productPrice==null)
+                throw new ($"Не найдена цена {product.PriceId} продукта {product.ProductId} в корзине {cartDto.Id}");
+            product.AddInfo(foundedShortInfo.Title,productPrice.Price,foundedShortInfo.ImageUrl,foundedShortInfo.IsAvailable);
+        }
+    }
+
+    private decimal CalculateCartPrice(CartDto cart)
     {
         _logger.LogInformation($"Подсчет цены товаров из корзины {cart.Id}");
-
-        var productsId = cart.Products.Select(p => p.ProductId).Distinct().ToList();
-        var products = _cloudStorageProvider.GetProductsCacheById(productsId).ToDictionary(x => x.Id);
-        var sum = cart.Products.Sum(product =>
-        {
-            var price = products[product.ProductId].Prices[product.PriceId].Price;
-            return price * product.Quantity;
-        });
+        
+        var sum = cart.Products.Sum(product => product.Price * product.Quantity);
         return sum;
     }
 

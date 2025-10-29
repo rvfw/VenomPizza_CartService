@@ -30,10 +30,6 @@ namespace VenomPizzaCartService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("numeric")
-                        .HasColumnName("total_price");
-
                     b.HasKey("Id");
 
                     b.ToTable("carts");

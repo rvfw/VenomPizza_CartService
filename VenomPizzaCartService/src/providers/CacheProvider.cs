@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis;
 using System.Text.Json;
-using VenomPizzaCartService.src.model;
+using VenomPizzaCartService.src.dto;
 using VenomPizzaCartService.src.providers;
 
 namespace VenomPizzaCartService.src.etc;
@@ -11,7 +11,7 @@ public class CacheProvider : ICacheProvider
     private readonly ILogger<CacheProvider> _logger;
     private static readonly Dictionary<Type, string> _keyPrefix = new()
     {
-        [typeof(Cart)] = "cart"
+        [typeof(CartDto)] = "cart"
     };
 
     public CacheProvider(IConnectionMultiplexer redis, ILogger<CacheProvider> logger)
@@ -32,7 +32,7 @@ public class CacheProvider : ICacheProvider
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Не удалось получить в редис значение с Id {id}");
+            _logger.LogError($"Не удалось получить в редис значение с Id {id}:{ex.Message}");
             return default;
         }
     }

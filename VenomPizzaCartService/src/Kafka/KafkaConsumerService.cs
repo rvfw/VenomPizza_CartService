@@ -22,9 +22,12 @@ public class KafkaConsumerService : BackgroundService
     {
         _cartEventHandlers = new()
         {
-            ["product_added"] = (service, product) => service.AddProductToCart(product.CartId, product.ProductId,product.PriceId, product.Quantity),
-            ["product_updated"] = (service, product) => service.UpdateProductQuantity(product.CartId, product.ProductId, product.PriceId, product.Quantity),
-            ["product_deleted"] = (service, product) => service.DeleteProductInCart(product.CartId, product.PriceId, product.ProductId),
+            ["product_added"] = (service, product) => service.AddProductToCart
+                (product.CartId, product.ProductId,product.PriceId, product.Quantity),
+            ["product_updated"] = (service, product) => service.UpdateProductQuantity
+                (product.CartId, product.ProductId, product.PriceId, product.Quantity),
+            ["product_deleted"] = (service, product) => service.DeleteProductInCart
+                (product.CartId, product.ProductId, product.PriceId),
         };
 
         _productEventHandlers = new()

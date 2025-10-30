@@ -8,6 +8,11 @@ public class CartDto
     public List<CartProductDto> Products { get; set; }=new();
     public decimal TotalPrice { get; set; }
 
+    public CartDto()
+    {
+        
+    }
+    
     public CartDto(int id)
     {
         Id = id;

@@ -13,6 +13,7 @@ public class CartProductDto
     public decimal Price { get; set; }
     public bool IsAvailable { get; set; }
 
+    public CartProductDto(){}
     public CartProductDto(CartProduct cartProduct)
     {
         CartId = cartProduct.CartId;

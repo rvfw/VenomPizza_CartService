@@ -79,7 +79,7 @@ public class CartsService:ICartsService
         if(cart==null)
             cart=await _cartRepository.CreateCart(cartId);
         else
-            await _cacheProvider.RemoveAsync<Cart>(cartId);
+            await _cacheProvider.RemoveAsync<CartDto>(cartId);
 
         var existingProduct = await _cartRepository.GetProductById(cartId, productId,priceId);
         if (existingProduct != null)
@@ -91,14 +91,14 @@ public class CartsService:ICartsService
     public async Task<CartProduct> UpdateProductQuantity(int cartId, int productId,int priceId, int quantity)
     {
         var product=await _cartRepository.UpdateProductQuantity(cartId, productId, priceId, quantity);
-        await _cacheProvider.RemoveAsync<Cart>(cartId);
+        await _cacheProvider.RemoveAsync<CartDto>(cartId);
         return product;
     }
 
     public async Task DeleteProductInCart(int cartId, int productId, int priceId)
     {
         await _cartRepository.DeleteProductInCart(cartId, productId, priceId);
-        await _cacheProvider.RemoveAsync<Cart>(cartId);
+        await _cacheProvider.RemoveAsync<CartDto>(cartId);
     }
 
     public async Task AddProductInfo(ProductShortInfoDto product)
